@@ -19,7 +19,6 @@ const PARTNERS = [
   { name: "Zephyrus Capital", src: "/placeholders/logos/zephyrus-capital.svg", w: 168, h: 75, dw: 247, dh: 110 },
   { name: "YGG", src: "/placeholders/logos/ygg.svg", w: 159, h: 79, dw: 234, dh: 116 },
   { name: "Animoca Brands", src: "/placeholders/logos/animoca-brands.png", w: 138, h: 83, dw: 203, dh: 122 },
-  { name: "Helium Deploy", src: "/placeholders/logos/helium-deploy.png", w: 197, h: 39, dw: 290, dh: 57 },
   { name: "MSA", src: "/placeholders/logos/msa.png", w: 202, h: 85, dw: 297, dh: 125 },
   { name: "RBV", src: "/placeholders/logos/rbv.png", w: 89, h: 83, dw: 131, dh: 122 },
   { name: "Caballeros Capital", src: "/placeholders/logos/caballeros-capital.png", w: 178, h: 75, dw: 262, dh: 110 },

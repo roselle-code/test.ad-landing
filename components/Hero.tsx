@@ -105,7 +105,7 @@ export default function Hero() {
       {/* Notification Bar */}
       <div className="w-full bg-[#291d00] flex items-center justify-center px-4 py-3 flex-shrink-0">
         <p className="text-xforge-gold text-[14px] sm:text-sm lg:text-base font-normal leading-[1.1] text-center">
-          Launching soon on Kickstarter • Early-bird perks • 100% refundable
+          Launching soon on Kickstarter • Early-backer perks
           deposit
         </p>
       </div>
@@ -159,10 +159,10 @@ export default function Hero() {
                 transition={{ duration: 0.7, ease: "easeOut" }}
                 className="text-[28px] sm:text-[44px] lg:text-[60px] font-semibold leading-[1.1]"
               >
-                <span className="text-white">AI smartphone that </span>
+                <span className="text-white">AI Smartphone that </span>
                 <br className="sm:hidden" />
                 <span className="font-serif italic text-xforge-gold">
-                  Pays it forward
+                  Pays It Forward
                 </span>
               </motion.h1>
             </div>
