@@ -58,7 +58,7 @@ export default function Footer() {
         aria-hidden="true"
       />
 
-      <div className="relative max-w-[874px] mx-auto px-4 sm:px-6 py-8 sm:py-10 lg:py-[52px] pb-10 sm:pb-12 lg:pb-[52px] flex flex-col items-center gap-8 lg:gap-[60px]">
+      <div className="relative max-w-[874px] mx-auto px-4 sm:px-6 py-8 sm:py-10 lg:py-[52px] pb-10 sm:pb-12 lg:pb-[52px] flex flex-col items-center gap-14 lg:gap-[80px]">
         {/* Top section */}
         <div className="flex flex-col items-center gap-10 lg:gap-[84px] w-full">
           {/* Logo */}
