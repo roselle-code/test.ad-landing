@@ -1,5 +1,4 @@
 import Hero from "@/components/Hero";
-import FloatingNav from "@/components/FloatingNav";
 import Partners from "@/components/Partners";
 import HowItWorks from "@/components/HowItWorks";
 import WhyDifferent from "@/components/WhyDifferent";
@@ -14,7 +13,7 @@ const jsonLd = {
   description:
     "A premium smartphone that quietly contributes to a decentralized network while you use it, rewarding you with real perks every single day.",
   brand: { "@type": "Brand", name: "XForge" },
-  image: "https://kickstarter.xforgephone.com/placeholders/phone-hero.png",
+  image: "https://kickstarter.xforgephone.com/placeholders/reserve-product.png",
   url: "https://kickstarter.xforgephone.com",
   offers: {
     "@type": "Offer",
@@ -36,7 +35,6 @@ export default function Home() {
       />
       <main>
         <Hero />
-        <FloatingNav />
         <Partners />
         <HowItWorks />
         <WhyDifferent />

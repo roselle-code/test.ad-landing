@@ -1,10 +1,19 @@
+// Reserve page: $3 deposit form + FAQ + product image + guarantee cards.
+// Dependencies: lib/animations (S), lib/analytics, lib/utils
+// Connected to: /api/checkout (Stripe redirect), Kickstarter (notify button)
+// FAQ renders in different positions: inside left column on desktop, bottom on mobile.
+// UPDATE pricing: search for "$3", "$299", "$499".
+// UPDATE Stripe URL: set STRIPE_CHECKOUT_URL env var (not hardcoded).
+
 "use client";
 
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { KICKSTARTER_URL, S } from "@/lib/animations";
+import { S } from "@/lib/animations";
+import { trackReserveClick, trackKickstarterClick } from "@/lib/analytics";
+import { KICKSTARTER_URL } from "@/lib/utils";
 
 const FAQ_ITEMS = [
   {
@@ -39,10 +48,27 @@ export default function ReservePage() {
     <main className="bg-white min-h-screen">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-[60px] py-8 sm:py-12 lg:py-[60px] pb-16 sm:pb-20 lg:pb-[80px]">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
-          {/* Left column: Product image + Guarantees */}
-          <div className="flex-1 flex flex-col gap-5">
+          {/* Left column: Product image + Guarantees (+ FAQ on desktop) */}
+          <div className="flex-1 flex flex-col gap-5 min-w-0">
             <ProductImage />
             <GuaranteeCards />
+
+            {/* FAQ — desktop only (aligned with left column) */}
+            <div className="hidden lg:block mt-10">
+              <h2 className="text-[20px] sm:text-[24px] font-semibold leading-[1.1] text-[#050505] mb-5">
+                Frequently Asked Questions
+              </h2>
+              <div className="flex flex-col gap-3">
+                {FAQ_ITEMS.map((item, i) => (
+                  <FAQItem
+                    key={i}
+                    question={item.question}
+                    answer={item.answer}
+                    defaultOpen={i === 0}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Right column: Reserve form */}
@@ -51,9 +77,9 @@ export default function ReservePage() {
           </div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="mt-12 lg:mt-[60px] max-w-[761px]">
-          <h2 className="text-[20px] sm:text-[24px] font-semibold leading-[1.1] text-[#050505] mb-5">
+        {/* FAQ — mobile only (below everything) */}
+        <div className="lg:hidden mt-10 sm:mt-12">
+          <h2 className="text-[20px] sm:text-[24px] font-semibold leading-[1.1] text-[#050505] mb-5 text-center">
             Frequently Asked Questions
           </h2>
           <div className="flex flex-col gap-3">
@@ -182,17 +208,52 @@ function ReserveForm() {
           </span>
         </div>
 
-        {/* Reserve button + checkout info */}
+        {/* Reserve button + Notify + checkout info */}
         <div className="flex flex-col gap-[12px]">
           <motion.a
-            href="https://checkout.stripe.com/c/pay/cs_live_b1ZkkmmOshVBHe5xwcgfNPMXNTj0L6AUtreElT3gaMNFtuY5dzR85hZv4t#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdkdWxOYHwnPyd1blppbHNgWjA0SEtkQ3REUHBiUV1vZ0x8ZkBHVE5TPDBrQ2tDf3FNT3ZPPX93SUlpPGxxMj1Ga0lUYGtOQFNgUWJoRm81dF1BaDEyUlZvcVRJNjNgMV9CcmpSf2pLUTFmNTVUTUxHd2RmMycpJ2N3amhWYHdzYHcnP3F3cGApJ2dkZm5id2pwa2FGamlqdyc%2FJyZjY2NjY2MnKSdpZHxqcHFRfHVgJz8naHBpcWxabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl"
+            href="/api/checkout"
+            onClick={() => trackReserveClick()}
+            whileHover="wiggle"
+            whileTap="wiggle"
+            className={`${S.btnGold} flex items-center justify-center h-[44px] w-full rounded-[12px] text-[14px] sm:text-[16px] font-medium hover:scale-[1.04]`}
+          >
+            <motion.span
+              variants={{ wiggle: { rotate: [0, -3, 3, -2, 1.5, 0] } }}
+              transition={{ duration: 0.5 }}
+              style={{ display: "inline-block", transformOrigin: "center bottom" }}
+            >
+              Reserve Discount for $3
+            </motion.span>
+          </motion.a>
+
+          <motion.a
+            href={KICKSTARTER_URL}
             target="_blank"
             rel="noopener noreferrer"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`${S.btnGold} flex items-center justify-center h-[44px] w-full rounded-[12px] text-[14px] sm:text-[16px] font-medium`}
+            onClick={() => trackKickstarterClick("reserve_page")}
+            whileHover="wiggle"
+            whileTap="wiggle"
+            className={`${S.btnNotify} flex items-center justify-center gap-[8px] h-[44px] w-full rounded-[12px] text-[14px] sm:text-[16px] font-medium hover:scale-[1.04]`}
           >
-            Reserve for $3
+            <motion.span
+              variants={{ wiggle: { rotate: [0, -3, 3, -2, 1.5, 0] } }}
+              transition={{ duration: 0.5 }}
+              style={{ display: "inline-block", transformOrigin: "center bottom" }}
+            >
+              Notify me
+            </motion.span>
+            <motion.div
+              variants={{ wiggle: { rotate: [0, -14, 12, -10, 8, -4, 0] } }}
+              transition={{ duration: 0.5 }}
+            >
+              <Image
+                src="/placeholders/icon-notification.svg"
+                alt=""
+                width={20}
+                height={20}
+                aria-hidden="true"
+              />
+            </motion.div>
           </motion.a>
 
           {/* Secure checkout */}

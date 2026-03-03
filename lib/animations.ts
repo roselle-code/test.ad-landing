@@ -1,3 +1,5 @@
+// Shared animation variants and Tailwind class strings used across ALL sections.
+// Changing S.btnGold or S.emailWrap affects Hero, HowItWorks, Footer, and /reserve.
 import type { Variants } from "framer-motion";
 
 export const fadeInUp: Variants = {
@@ -26,9 +28,6 @@ export const staggerContainer: Variants = {
     },
   },
 };
-
-export const KICKSTARTER_URL =
-  "https://www.kickstarter.com/projects/xforgephone/xforge-the-phone-that-pays-it-forward/";
 
 export const S = {
   btnGold:

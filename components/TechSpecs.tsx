@@ -1,3 +1,7 @@
+// Tech specs grid with per-icon hover animations (clip-path fills, rotations, etc.).
+// Each spec has a custom Framer Motion variant in ICON_ANIMATIONS.
+// To update specs: modify SPECS array. To update icons: replace SVGs in /public/placeholders/.
+
 "use client";
 
 import Image from "next/image";

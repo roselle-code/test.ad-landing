@@ -1,71 +1,16 @@
+// "Why XForge is Different" section: animated reward counter, phone mockup, reward cards.
+// Dependencies: lib/animations, hooks/useLiveCounter, why-different/RewardCards
+// Counter animation uses requestAnimationFrame for smooth number increment.
+// Desktop/mobile reward cards are separate components for layout differences.
+
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { fadeInUp, scaleIn } from "@/lib/animations";
-
-function useLiveCounter(startValue: number, isActive: boolean) {
-  const [value, setValue] = useState(startValue);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const clear = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isActive) {
-      intervalRef.current = setInterval(() => {
-        setValue((prev) => prev + Math.floor(Math.random() * 80) + 20);
-      }, 300);
-    } else {
-      clear();
-    }
-    return clear;
-  }, [isActive, clear]);
-
-  return value;
-}
-
-const CARD_ANGLE = {
-  rotate: -3.78,
-  skewX: 3.73,
-};
-
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-
-const rewardElevate = {
-  hidden: { opacity: 0, y: 50, scale: 0.92 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 1, ease: EASE, delay: 0.5 },
-  },
-};
-
-const backCardReveal = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: EASE, delay: 0.2 },
-  },
-};
-
-const midCardReveal = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.9, ease: EASE, delay: 0.35 },
-  },
-};
-
-const cardTransform = `rotate(${CARD_ANGLE.rotate}deg) skewX(${CARD_ANGLE.skewX}deg)`;
+import { useLiveCounter } from "@/hooks/useLiveCounter";
+import { DesktopRewardCards, MobileRewardCards } from "./why-different/RewardCards";
 
 export default function WhyDifferent() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -92,7 +37,7 @@ export default function WhyDifferent() {
           variants={scaleIn}
           className="relative w-full sm:w-[400px] md:w-[460px] lg:w-[532px] h-[358px] sm:h-[380px] md:h-[420px] lg:h-[532px] flex-shrink-0"
         >
-          {/* Mobile phone image — rotated and cropped like Figma */}
+          {/* Mobile phone image */}
           <div className="absolute inset-0 rounded-[16px] overflow-hidden bg-xforge-black lg:hidden">
             <div
               className="absolute"
@@ -119,7 +64,7 @@ export default function WhyDifferent() {
             </div>
           </div>
 
-          {/* Desktop phone image — overflow hidden crops the phone */}
+          {/* Desktop phone image */}
           <div className="absolute inset-0 rounded-3xl overflow-hidden bg-xforge-black hidden lg:block">
             <div
               className="absolute"
@@ -145,159 +90,8 @@ export default function WhyDifferent() {
             </div>
           </div>
 
-          {/* ===== Desktop reward cards (lg+) ===== */}
-
-          {/* Desktop back card */}
-          <div
-            className="hidden lg:block absolute z-10 w-[326px]"
-            style={{
-              left: "calc(54% - 163px)",
-              top: "calc(50% - 55px)",
-              transform: cardTransform,
-              filter: "blur(1.86px)",
-            }}
-          >
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={backCardReveal}>
-              <div className="bg-xforge-card-bg/90 backdrop-blur-sm border border-[#bdbdbd]/40 rounded-[14px] p-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
-                <div className="flex items-start justify-between mb-3">
-                  <span className="text-[#686c81] text-[17px]">Network Rewards</span>
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex rounded-full h-[11px] w-[11px] bg-xforge-green" />
-                    <span className="text-xforge-green text-[17px]">Node is Running</span>
-                  </div>
-                </div>
-                <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-xl p-3 flex items-center justify-center">
-                  <span className="font-display font-bold text-xforge-gold text-[43px] leading-[1.1]">6,367,200</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Desktop mid card */}
-          <div
-            className="hidden lg:block absolute z-20 w-[326px]"
-            style={{
-              left: "calc(58% - 163px)",
-              top: "calc(47% - 55px)",
-              transform: cardTransform,
-              filter: "blur(0.93px)",
-            }}
-          >
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={midCardReveal}>
-              <div className="bg-xforge-card-bg/90 backdrop-blur-sm border border-[#bdbdbd]/40 rounded-[14px] p-4 shadow-[0_16px_50px_rgba(0,0,0,0.5)]">
-                <div className="flex items-start justify-between mb-3">
-                  <span className="text-[#686c81] text-[17px]">Network Rewards</span>
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex rounded-full h-[11px] w-[11px] bg-xforge-green" />
-                    <span className="text-xforge-green text-[17px]">Node is Running</span>
-                  </div>
-                </div>
-                <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-xl p-3 flex items-center justify-center">
-                  <span className="font-display font-bold text-xforge-gold text-[43px] leading-[1.1]">6,367,200</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Desktop front card */}
-          <div
-            className="hidden lg:block absolute z-30 w-[326px]"
-            style={{
-              left: "calc(61% - 163px)",
-              top: "calc(43% - 55px)",
-              transform: cardTransform,
-            }}
-          >
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={rewardElevate}>
-              <div className="bg-xforge-card-bg3 backdrop-blur-md border border-[#bdbdbd]/40 rounded-[14px] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-                <div className="flex items-start mb-3">
-                  <span className="text-[#aeb2c7] text-[17px]">Network Rewards</span>
-                </div>
-                <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-xl p-3 flex items-center justify-center">
-                  <span className="font-display font-bold text-xforge-gold text-[43px] leading-[1.1] tabular-nums">
-                    {rewardCount.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* ===== Mobile reward cards (<lg) ===== */}
-
-          {/* Mobile back card */}
-          <div
-            className="block lg:hidden absolute z-10 w-[220px]"
-            style={{
-              left: "calc(50% - 93px)",
-              top: "calc(50% - 91px)",
-              transform: cardTransform,
-              filter: "blur(1.25px)",
-            }}
-          >
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={backCardReveal}>
-              <div className="bg-xforge-card-bg backdrop-blur-sm border border-[#bdbdbd]/40 rounded-[9px] p-[11px] shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
-                <div className="flex items-start justify-between mb-[7px]">
-                  <span className="text-[#686c81] text-[11px]">Network Rewards</span>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex rounded-full h-[7px] w-[7px] bg-xforge-green" />
-                    <span className="text-xforge-green text-[11px]">Node is Running</span>
-                  </div>
-                </div>
-                <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-[8px] p-[7px] h-[53px] flex items-center justify-center">
-                  <span className="font-display font-bold text-xforge-gold text-[29px] leading-[1.1]">6,367,200</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Mobile mid card */}
-          <div
-            className="block lg:hidden absolute z-20 w-[220px]"
-            style={{
-              left: "calc(50% - 82px)",
-              top: "calc(50% - 103px)",
-              transform: cardTransform,
-              filter: "blur(0.63px)",
-            }}
-          >
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={midCardReveal}>
-              <div className="bg-xforge-card-bg backdrop-blur-sm border border-[#bdbdbd]/40 rounded-[9px] p-[11px] shadow-[0_16px_50px_rgba(0,0,0,0.5)]">
-                <div className="flex items-start justify-between mb-[7px]">
-                  <span className="text-[#686c81] text-[11px]">Network Rewards</span>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex rounded-full h-[7px] w-[7px] bg-xforge-green" />
-                    <span className="text-xforge-green text-[11px]">Node is Running</span>
-                  </div>
-                </div>
-                <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-[8px] p-[7px] h-[53px] flex items-center justify-center">
-                  <span className="font-display font-bold text-xforge-gold text-[29px] leading-[1.1]">6,367,200</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Mobile front card */}
-          <div
-            className="block lg:hidden absolute z-30 w-[220px]"
-            style={{
-              left: "calc(50% - 71px)",
-              top: "calc(50% - 117px)",
-              transform: cardTransform,
-            }}
-          >
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={rewardElevate}>
-              <div className="bg-xforge-card-bg3 backdrop-blur-md border border-[#bdbdbd]/40 rounded-[9px] p-[11px] shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-                <div className="flex items-start mb-[7px]">
-                  <span className="text-[#aeb2c7] text-[11px]">Network Rewards</span>
-                </div>
-                <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-[8px] p-[7px] h-[53px] flex items-center justify-center">
-                  <span className="font-display font-bold text-xforge-gold text-[29px] leading-[1.1] tabular-nums">
-                    {rewardCount.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          <DesktopRewardCards rewardCount={rewardCount} />
+          <MobileRewardCards rewardCount={rewardCount} />
         </motion.div>
 
         {/* Info Container */}

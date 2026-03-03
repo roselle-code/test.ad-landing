@@ -36,6 +36,9 @@ yarn-error.log*
 # cursor IDE
 .cursor/
 
+# subscriber data
+/data/
+
 # vercel
 .vercel
 

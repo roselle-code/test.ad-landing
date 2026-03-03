@@ -1,8 +1,12 @@
+// Pricing comparison section. Shows $499 → $299 value prop with Kickstarter early-bird.
+// UPDATE pricing: search for "$299" and "$499" in this file.
+// Stripe/payment text includes "100% Refundable" guarantee.
+
 "use client";
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { fadeInUp, S } from "@/lib/animations";
+import { fadeInUp } from "@/lib/animations";
 
 
 export default function WhyReserve() {
@@ -18,7 +22,7 @@ export default function WhyReserve() {
           className="text-[20px] sm:text-[28px] md:text-[36px] lg:text-[40px] font-semibold leading-[1.1] text-black text-center"
         >
           <span>Why reserve with </span>
-          <span className="font-serif italic font-bold underline">$3?</span>
+          <span className="font-serif italic font-bold underline">$3</span>
         </motion.h2>
 
         {/* Content Container */}
@@ -76,60 +80,30 @@ export default function WhyReserve() {
           </p>
         </motion.div>
 
-        {/* Reserve Button */}
+        {/* Payment info */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          className="flex flex-col items-center gap-4 sm:gap-6"
+          className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm lg:text-base font-normal leading-[1.3] text-black text-center"
         >
-          <motion.a
-            href="/reserve"
-            whileHover="wiggle"
-            whileTap="wiggle"
-            className={`${S.btnGold} flex items-center justify-center gap-2 w-[200px] h-[48px] rounded-[16px] text-base font-medium hover:scale-[1.04] will-change-transform`}
-          >
-            <motion.span
-              variants={{ wiggle: { rotate: [0, -3, 3, -2, 1.5, 0] } }}
-              transition={{ duration: 0.5 }}
-              style={{ display: "inline-block", transformOrigin: "center bottom" }}
-            >
-              Reserve for $3
-            </motion.span>
-            <motion.div
-              variants={{ wiggle: { rotate: [0, -14, 12, -10, 8, -4, 0] } }}
-              transition={{ duration: 0.5 }}
-            >
-              <Image
-                src="/placeholders/arrow-icon.svg"
-                alt=""
-                width={20}
-                height={20}
-                aria-hidden="true"
-              />
-            </motion.div>
-          </motion.a>
-
-          {/* Payment info */}
-          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm lg:text-base font-normal leading-[1.3] text-black text-center">
-            <Image
-              src="/placeholders/shield-icon.svg"
-              alt=""
-              width={20}
-              height={20}
-              className="w-4 sm:w-5 h-4 sm:h-5"
-              aria-hidden="true"
-            />
-            <span>100% Refundable  •  Secure payment powered by</span>
-            <Image
-              src="/placeholders/stripe-logo.svg"
-              alt="Stripe"
-              width={48}
-              height={20}
-              className="w-[39px] sm:w-10 lg:w-12 h-4 sm:h-5"
-            />
-          </div>
+          <Image
+            src="/placeholders/shield-icon.svg"
+            alt=""
+            width={20}
+            height={20}
+            className="w-4 sm:w-5 h-4 sm:h-5"
+            aria-hidden="true"
+          />
+          <span>100% Refundable  •  Secure payment powered by</span>
+          <Image
+            src="/placeholders/stripe-logo.svg"
+            alt="Stripe"
+            width={48}
+            height={20}
+            className="w-[39px] sm:w-10 lg:w-12 h-4 sm:h-5"
+          />
         </motion.div>
       </div>
     </section>

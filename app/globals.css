@@ -102,7 +102,14 @@ body {
   animation: footer-pattern-fade 6s ease-in-out infinite;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   .animate-marquee,
   .animate-glow-pulse,
   .animate-gradient-shift,

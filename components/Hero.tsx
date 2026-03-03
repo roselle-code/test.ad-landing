@@ -1,323 +1,238 @@
+// Hero section: full-viewport video background + email capture CTA.
+// Dependencies: lib/animations (S.btnGold, S.emailWrap), lib/analytics, lib/utils
+// Connected to: /api/subscribe (email form), /reserve (redirect after submit)
+//
+// Browser-sensitive: video uses WebM (Safari 16+ required), IntersectionObserver
+// for lazy loading, matchMedia for responsive video source switching.
+// Uses 100dvh for full viewport — requires iOS 15.4+.
+
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion, type Variants } from "framer-motion";
-
-const HERO_FEATURES = [
-  {
-    icon: "/placeholders/build-icon.svg",
-    title: "Premium Build",
-    subtitle: "Built to last",
-    position: "top-left" as const,
-  },
-  {
-    icon: "/placeholders/camera-icon.svg",
-    title: "64MP AI Camera",
-    subtitle: "AI-enhanced photography",
-    position: "top-right" as const,
-  },
-  {
-    icon: "/placeholders/core-icon.svg",
-    title: "Octa-Core Power",
-    subtitle: "Silky-smooth multitasking on Android 15.",
-    position: "bottom-left" as const,
-  },
-  {
-    icon: "/placeholders/battery-icon.svg",
-    title: "5000mAh Battery",
-    subtitle: "Never worry about running out.",
-    position: "bottom-right" as const,
-  },
-];
-
-const POSITION_CLASSES: Record<string, string> = {
-  "top-left": "left-[8px] sm:left-[20px] lg:left-[50px] top-[58px] w-[129px] sm:w-[200px] lg:w-[221px]",
-  "top-right": "right-[8px] sm:right-[10px] lg:right-[27px] top-0 w-[168px] sm:w-[220px] lg:w-[254px]",
-  "bottom-left":
-    "left-[8px] sm:left-0 top-auto bottom-[75px] sm:bottom-[40px] lg:bottom-0 w-[150px] sm:w-[260px] lg:w-[338px]",
-  "bottom-right":
-    "right-[8px] sm:right-0 top-auto bottom-[20px] sm:bottom-[30px] lg:bottom-[46px] w-[140px] sm:w-[240px] lg:w-[283px]",
-};
-
-const CARD_ORIGINS: Record<string, { x: number; y: number }> = {
-  "top-left": { x: -40, y: -20 },
-  "top-right": { x: 40, y: -20 },
-  "bottom-left": { x: -40, y: 20 },
-  "bottom-right": { x: 40, y: 20 },
-};
-
-const titleVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: "easeOut" },
-  },
-};
-
-const phoneVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.92 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 },
-  },
-};
-
-function cardVariants(position: string): Variants {
-  const origin = CARD_ORIGINS[position];
-  return {
-    hidden: { opacity: 0, x: origin.x, y: origin.y },
-    visible: {
-      opacity: 1,
-      x: 0,
-      y: 0,
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
-    },
-  };
-}
-
-function echoVariants(position: string): Variants {
-  const origin = CARD_ORIGINS[position];
-  return {
-    hidden: { opacity: 0, x: origin.x * 1.3, y: origin.y * 1.3, scale: 0.92 },
-    visible: {
-      opacity: [0, 0.4, 0],
-      x: [origin.x * 1.3, origin.x * 0.3, 0],
-      y: [origin.y * 1.3, origin.y * 0.3, 0],
-      scale: [0.92, 0.97, 1],
-      transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] },
-    },
-  };
-}
-
-const containerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.2, delayChildren: 0.5 },
-  },
-};
+import { motion } from "framer-motion";
+import { S } from "@/lib/animations";
+import { trackEmailSubmit } from "@/lib/analytics";
+import { isValidEmail } from "@/lib/utils";
 
 export default function Hero() {
+  const router = useRouter();
+  const sectionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
+
+  const [email, setEmail] = useState("");
+  const [touched, setTouched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const showError = touched && email.length > 0 && !isValidEmail(email);
+
+  const pickSource = useCallback(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    return mq.matches
+      ? "/placeholders/hero-video-web.webm"
+      : "/placeholders/hero-video-mobile.webm";
+  }, []);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const video = videoRef.current;
+    if (!section || !video) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!videoSrc) {
+            const src = pickSource();
+            setVideoSrc(src);
+          }
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+
+    io.observe(section);
+    return () => io.disconnect();
+  }, [videoSrc, pickSource]);
+
+  useEffect(() => {
+    if (!videoSrc || !videoRef.current) return;
+    videoRef.current.load();
+    videoRef.current.play().catch(() => {});
+  }, [videoSrc]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const handler = () => {
+      const newSrc = pickSource();
+      setVideoSrc((prev) => (prev !== newSrc ? newSrc : prev));
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [pickSource]);
+
+  async function handleSubmit() {
+    setTouched(true);
+    if (!isValidEmail(email) || submitting) {
+      if (!isValidEmail(email)) inputRef.current?.focus();
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "hero" }),
+      });
+      trackEmailSubmit("hero");
+    } catch {}
+    setEmail("");
+    setTouched(false);
+    setSubmitting(false);
+    router.push("/reserve");
+  }
+
   return (
     <section
       id="hero"
-      className="relative w-full bg-xforge-black overflow-hidden"
+      ref={sectionRef}
+      className="relative w-full h-[100dvh] bg-black overflow-hidden flex flex-col"
     >
       {/* Notification Bar */}
-      <div className="w-full bg-xforge-dark flex items-center justify-center px-4 py-3">
+      <div className="w-full bg-[#291d00] flex items-center justify-center px-4 py-3 flex-shrink-0">
         <p className="text-xforge-gold text-[14px] sm:text-sm lg:text-base font-normal leading-[1.1] text-center">
           Launching soon on Kickstarter • Early-bird perks • 100% refundable
           deposit
         </p>
       </div>
 
-      {/* Hero Content */}
-      <div className="relative flex flex-col items-center pt-8 sm:pt-10 lg:pt-[57px] pb-24 sm:pb-26 lg:pb-28">
-        {/* Title -- single line on desktop */}
-        <motion.h1
-          initial="hidden"
-          animate="visible"
-          variants={titleVariants}
-          className="text-center text-[36px] sm:text-[44px] md:text-[48px] lg:text-[60px] font-semibold leading-[1.1] px-4 lg:whitespace-nowrap"
+      {/* Black bleed to cover subpixel gap at section boundary */}
+      <div className="absolute bottom-0 left-0 right-0 h-[4px] bg-black z-20 translate-y-[2px]" />
+
+      {/* Video + Overlay Container — fills remaining viewport */}
+      <div className="relative flex-1 min-h-0">
+        {/* Background Video */}
+        <video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          preload="none"
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
         >
-          <span className="text-white">The Phone that </span>
-          <span className="font-serif italic text-xforge-gold">
-            Pays You Back
-          </span>
-        </motion.h1>
+          {videoSrc && <source src={videoSrc} type="video/webm" />}
+        </video>
 
-        {/* Phone + Feature Cards Container */}
-        <div className="relative mt-10 sm:mt-14 lg:mt-21 w-full max-w-[763px] mx-auto px-4 sm:px-6 lg:px-0 h-[420px] sm:h-[460px] md:h-[490px] lg:h-[524px]">
-          {/* Glow effect behind phone */}
-          <div className="absolute left-1/2 top-[55%] -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[380px] lg:w-[450px] h-[120px] sm:h-[140px] lg:h-[165px] opacity-60 pointer-events-none">
-            <Image
-              src="/placeholders/hero-glow.svg"
-              alt=""
-              fill
-              className="object-contain"
-              aria-hidden="true"
-            />
+        {/* Bottom gradient overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,1) 100%)",
+          }}
+        />
+
+        {/* Content overlay at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-8 lg:px-[60px] pb-4 sm:pb-6 lg:pb-10">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 lg:gap-8">
+            {/* Left: Logos + Title */}
+            <div className="flex flex-col gap-3 lg:gap-6 max-w-[647px]">
+              {/* XForge × Kickstarter logos */}
+              <div className="relative w-[200px] h-[14px] sm:w-[320px] sm:h-[22px] lg:w-[409px] lg:h-[28px]">
+                <Image
+                  src="/placeholders/xforge-kickstarter-logos.svg"
+                  alt="XForge × Kickstarter"
+                  fill
+                  className="object-contain object-left"
+                />
+              </div>
+
+              {/* Title */}
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="text-[28px] sm:text-[44px] lg:text-[60px] font-semibold leading-[1.1]"
+              >
+                <span className="text-white">AI smartphone that </span>
+                <br className="sm:hidden" />
+                <span className="font-serif italic text-xforge-gold">
+                  Pays it forward
+                </span>
+              </motion.h1>
+            </div>
+
+            {/* Right: Email input */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+              className="w-full max-w-[452px] lg:flex-shrink-0"
+            >
+              <div className="bg-white rounded-[16px] p-[6px] sm:p-2 shadow-[0px_1px_4px_0px_rgba(0,0,0,0.12)]">
+                <div
+                  className={`${S.emailWrap} flex items-center justify-between pl-3 sm:pl-4 pr-1 py-1 h-[40px] sm:h-[44px] ${
+                    showError ? "border-red-500" : "border-xforge-border"
+                  }`}
+                >
+                  <input
+                    ref={inputRef}
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() => setTouched(true)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                    placeholder="name@domain.com"
+                    aria-label="Email address"
+                    aria-invalid={showError}
+                    className={`${S.emailField} text-sm sm:text-base font-normal`}
+                  />
+                  <motion.button
+                    type="button"
+                    onClick={handleSubmit}
+                    whileHover="wiggle"
+                    whileTap="wiggle"
+                    className={`${S.btnGold} flex-shrink-0 flex items-center gap-1.5 sm:gap-2 rounded-[10px] sm:rounded-[12px] px-3 sm:px-4 h-[28px] sm:h-[32px] text-sm sm:text-base font-medium hover:scale-[1.04]`}
+                  >
+                    <motion.span
+                      variants={{
+                        wiggle: { rotate: [0, -3, 3, -2, 1.5, 0] },
+                      }}
+                      transition={{ duration: 0.5 }}
+                      style={{
+                        display: "inline-block",
+                        transformOrigin: "center bottom",
+                      }}
+                    >
+                      Get 40% Discount
+                    </motion.span>
+                    <motion.div
+                      variants={{
+                        wiggle: { rotate: [0, -14, 12, -10, 8, -4, 0] },
+                      }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Image
+                        src="/placeholders/arrow-icon.svg"
+                        alt=""
+                        width={20}
+                        height={20}
+                        aria-hidden="true"
+                      />
+                    </motion.div>
+                  </motion.button>
+                  <div className={S.insetShadow} />
+                </div>
+              </div>
+            </motion.div>
           </div>
-
-          {/* Phone Image -- floating idle + screen glow on hover */}
-          <PhoneHero />
-
-          {/* Feature Cards */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="absolute inset-0"
-          >
-            {HERO_FEATURES.map((feature) => (
-              <FeatureCard key={feature.title} feature={feature} />
-            ))}
-          </motion.div>
         </div>
       </div>
     </section>
-  );
-}
-
-function PhoneHero() {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={phoneVariants}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      onTapStart={() => setIsHovered(true)}
-      onTap={() => setTimeout(() => setIsHovered(false), 800)}
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[350px] sm:w-[260px] sm:h-[410px] md:w-[310px] md:h-[460px] lg:w-[368px] lg:h-[514px] z-10 cursor-pointer"
-    >
-      {/* Screen glow -- expands on hover */}
-      <motion.div
-        animate={
-          isHovered
-            ? {
-                opacity: [0.3, 0.7, 0.55],
-                scale: [1, 1.25, 1.15],
-              }
-            : { opacity: 0.15, scale: 1 }
-        }
-        transition={
-          isHovered
-            ? { duration: 0.6, ease: "easeOut" }
-            : { duration: 0.8, ease: "easeInOut" }
-        }
-        className="absolute inset-[-30%] pointer-events-none rounded-full blur-3xl"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(255,188,14,0.35) 0%, rgba(255,188,14,0.1) 45%, transparent 75%)",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Floating idle animation */}
-      <motion.div
-        animate={{ y: [0, -8, 0] }}
-        transition={{
-          duration: 3.5,
-          ease: "easeInOut",
-          repeat: Infinity,
-          repeatType: "loop",
-        }}
-        className="relative w-full h-full will-change-transform"
-      >
-        {/* Magnetic lean toward cursor on hover */}
-        <motion.div
-          animate={
-            isHovered
-              ? { scale: 1.03, rotateZ: -1 }
-              : { scale: 1, rotateZ: 0 }
-          }
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="relative w-full h-full"
-        >
-          <Image
-            src="/placeholders/phone-hero.png"
-            alt="XForge Phone"
-            fill
-            className="object-contain"
-            priority
-          />
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-interface FeatureCardProps {
-  feature: (typeof HERO_FEATURES)[number];
-}
-
-function FeatureCard({ feature }: FeatureCardProps) {
-  const [isActive, setIsActive] = useState(false);
-
-  return (
-    <div className={`absolute ${POSITION_CLASSES[feature.position]}`}>
-      {/* Echo / ghost trail behind the card */}
-      <motion.div
-        variants={echoVariants(feature.position)}
-        className="absolute inset-0 rounded-[22px] border border-white/30 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(173deg, rgba(58,58,58,0.4) 12.4%, rgba(0,0,0,0.3) 99%)",
-          filter: "blur(8px)",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Main card */}
-      <motion.div
-        variants={cardVariants(feature.position)}
-        onHoverStart={() => setIsActive(true)}
-        onHoverEnd={() => setIsActive(false)}
-        onTapStart={() => setIsActive(true)}
-        onTap={() => setTimeout(() => setIsActive(false), 600)}
-        whileHover={{
-          scale: 1.05,
-          boxShadow:
-            "0.933px 1.866px 16px 4px rgba(255,248,145,0.25), 0 0 24px 2px rgba(255,188,14,0.12)",
-        }}
-        whileTap={{ scale: 0.97 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        className="relative cursor-pointer z-20 border border-white/30 rounded-[16px] sm:rounded-[20px] lg:rounded-[22px] p-3 sm:p-4 lg:p-5 backdrop-blur-sm shadow-[0.933px_1.866px_11.57px_1.866px_rgba(255,248,145,0.13)]"
-        style={{
-          background:
-            "linear-gradient(173deg, rgba(58,58,58,0.73) 12.4%, rgba(0,0,0,0.73) 99%)",
-        }}
-      >
-        <div className="flex flex-col gap-2 sm:gap-3">
-          {/* Icon with glow on interaction */}
-          <div className="relative w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8">
-            {/* Glow ring behind icon */}
-            <motion.div
-              animate={
-                isActive
-                  ? {
-                      opacity: [0, 0.8, 0.6],
-                      scale: [0.6, 1.6, 1.4],
-                    }
-                  : { opacity: 0, scale: 0.6 }
-              }
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="absolute inset-[-8px] rounded-full pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(255,188,14,0.5) 0%, rgba(255,188,14,0) 70%)",
-              }}
-              aria-hidden="true"
-            />
-            <motion.div
-              animate={
-                isActive
-                  ? { filter: "drop-shadow(0 0 8px rgba(255,188,14,0.9))" }
-                  : { filter: "drop-shadow(0 0 0px rgba(255,188,14,0))" }
-              }
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <Image
-                src={feature.icon}
-                alt=""
-                width={32}
-                height={32}
-                className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8"
-                aria-hidden="true"
-              />
-            </motion.div>
-          </div>
-          <div className="flex flex-col gap-1 leading-[1.3] text-white">
-            <p className="font-semibold text-[14px] sm:text-[15px] lg:text-[17px]">{feature.title}</p>
-            <p className="font-normal text-white/80 text-[12px] sm:text-[13px] lg:text-[15px]">{feature.subtitle}</p>
-          </div>
-        </div>
-      </motion.div>
-    </div>
   );
 }

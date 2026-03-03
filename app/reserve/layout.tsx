@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     images: ["/placeholders/reserve-product.png"],
   },
   alternates: {
-    canonical: "https://xforgephone.com/reserve",
+    canonical: "https://kickstarter.xforgephone.com/reserve",
   },
 };
 

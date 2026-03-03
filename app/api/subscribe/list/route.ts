@@ -1,3 +1,7 @@
+// Admin-only endpoint to list subscribers. Protected by Bearer token.
+// Requires: ADMIN_API_KEY in .env.local
+// Usage: curl -H "Authorization: Bearer <key>" /api/subscribe/list
+
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
@@ -6,9 +10,20 @@ const DB_PATH = path.join(process.cwd(), "data", "subscribers.json");
 
 export async function GET(req: NextRequest) {
   const adminKey = process.env.ADMIN_API_KEY;
-  const providedKey = req.nextUrl.searchParams.get("key");
 
-  if (!adminKey || providedKey !== adminKey) {
+  if (!adminKey) {
+    return NextResponse.json(
+      { error: "Admin access not configured" },
+      { status: 503 }
+    );
+  }
+
+  const authHeader = req.headers.get("authorization");
+  const token = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice(7).trim()
+    : null;
+
+  if (!token || token !== adminKey) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
