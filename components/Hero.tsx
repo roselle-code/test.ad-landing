@@ -109,7 +109,7 @@ export default function Hero() {
         loop
         playsInline
         preload="none"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-contain"
         aria-hidden="true"
       >
         {videoSrc && <source src={videoSrc} type="video/webm" />}

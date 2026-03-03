@@ -1,6 +1,8 @@
 // Carousel photo order follows Figma's circular path layout (left-to-right angular order).
 // Reordering this array changes which photos appear in which positions.
 // After reordering, you must recalculate INITIAL_ROTATION to center the desired photo.
+
+// Base 8 photos — used by mobile (which slices to first 5)
 export const PHOTOS = [
   "/placeholders/carousel-6.png",
   "/placeholders/carousel-5.png",
@@ -11,6 +13,10 @@ export const PHOTOS = [
   "/placeholders/carousel-3.png",
   "/placeholders/carousel-7.png",
 ];
+
+// Desktop doubles the photos to fill more of the circular arc,
+// so zoomed-out or wide viewports still see a complete gallery.
+export const DESKTOP_PHOTOS = [...PHOTOS, ...PHOTOS];
 
 export const FEATURES = [
   {
@@ -31,15 +37,16 @@ export const FEATURES = [
 ];
 
 export const RADIUS = 1100;
-export const PHOTO_COUNT = PHOTOS.length;
-export const ANGLE_STEP = 16;
-export const START_ANGLE = -((PHOTO_COUNT - 1) / 2) * ANGLE_STEP;
+export const DESKTOP_PHOTO_COUNT = DESKTOP_PHOTOS.length;
+// Tighter spacing (12° vs 16°) so photos are closer together and fill more of the arc
+export const ANGLE_STEP = 12;
+export const START_ANGLE = -((DESKTOP_PHOTO_COUNT - 1) / 2) * ANGLE_STEP;
 // TOTAL_ROTATION: total degrees the wheel rotates during scroll (negative = counter-clockwise)
 export const TOTAL_ROTATION = -36;
 export const PHOTO_TOP_OFFSET = 60;
-// INITIAL_ROTATION: degrees offset at page load. 40 centers the MOBA gaming photo (carousel-5.png).
-// Formula: INITIAL_ROTATION ≈ index * ANGLE_STEP adjusted for which photo should be at 12 o'clock.
-export const INITIAL_ROTATION = 40;
+// INITIAL_ROTATION: centers carousel-5.png (index 9 in the doubled array) at 12 o'clock.
+// Index 9 angle = START_ANGLE + 9 * 12 = -90 + 108 = 18°. Negate to center: -18°.
+export const INITIAL_ROTATION = -18;
 
 export function getPhotoStyle(index: number) {
   const angleDeg = START_ANGLE + index * ANGLE_STEP;

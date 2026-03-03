@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  PHOTOS,
+  DESKTOP_PHOTOS,
   FEATURES,
   RADIUS,
   PHOTO_TOP_OFFSET,
@@ -88,7 +88,7 @@ export default function HowItWorks() {
             className="absolute inset-0 will-change-transform"
             style={{ transformOrigin: `50% ${RADIUS + PHOTO_TOP_OFFSET}px` }}
           >
-            {PHOTOS.map((src, i) => (
+            {DESKTOP_PHOTOS.map((src, i) => (
               <div
                 key={i}
                 className="absolute w-[180px] h-[200px] lg:w-[220px] lg:h-[240px] rounded-2xl lg:rounded-3xl overflow-hidden shadow-[0px_5px_4.8px_0px_rgba(0,0,0,0.25)]"
@@ -100,11 +100,11 @@ export default function HowItWorks() {
               >
                 <Image
                   src={src}
-                  alt={`XForge photo ${i + 1}`}
+                  alt={`XForge photo ${(i % 8) + 1}`}
                   width={220}
                   height={240}
                   className="w-full h-full object-cover"
-                  style={i === 3 ? { objectPosition: "35% center" } : undefined}
+                  style={src.includes("carousel-4") ? { objectPosition: "35% center" } : undefined}
                 />
               </div>
             ))}
