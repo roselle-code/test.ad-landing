@@ -24,22 +24,7 @@ const FAQ_ITEMS = [
   {
     question: "When can I get my product?",
     answer:
-      "Product creators offer you the lowest ever exclusive price when you reserve. This is not yet a full purchase, and it's up to you to cancel or proceed with the purchase later. Product launch and delivery timelines are somewhat unpredictable. Where possible, creators offer estimates. And if you don't receive the product within 2 years, you'll get a full automatic refund.",
-  },
-  {
-    question: "How can I claim a refund?",
-    answer: (
-      <>
-        Claiming a refund is easy. Just email{" "}
-        <a
-          href="mailto:support@xforgephone.com"
-          className="underline"
-        >
-          support@xforgephone.com
-        </a>{" "}
-        from the email you used to reserve the discount.
-      </>
-    ),
+      "Product creators offer you the lowest ever exclusive price when you reserve. This is not yet a full purchase, and it's up to you to cancel or proceed with the purchase later. Product launch and delivery timelines are somewhat unpredictable. Where possible, creators offer estimates.",
   },
 ];
 
@@ -126,7 +111,7 @@ function GuaranteeCards() {
         />
         <div className="flex flex-col gap-2 leading-[1.1] min-w-0">
           <p className="text-[14px] sm:text-[18px] font-medium text-[#050505]">
-            100% Refundable
+            100% Refundable Deposit
           </p>
           <p className="text-[12px] sm:text-[14px] font-normal leading-[1.3] text-[#707070]">
             Cancel anytime before launch and get your full deposit back. No
