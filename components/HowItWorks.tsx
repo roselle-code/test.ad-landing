@@ -9,17 +9,16 @@
 
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { FEATURES } from "./how-it-works/gallery-config";
 import EmailSubscription from "./how-it-works/EmailSubscription";
 import MobileGallery from "./how-it-works/MobileGallery";
 
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+gsap.registerPlugin(ScrollTrigger);
 
 // Each photo has 3 scatter states (one per feature step).
 // All photos are visible at all times — they rearrange on scroll.
@@ -106,80 +105,12 @@ const SCATTER_PHOTOS = [
   },
 ];
 
-const AUTO_PLAY_INTERVAL = 2500;
-const AUTO_PLAY_RESUME_DELAY = 2000;
-const SNAP_POINTS = [0, 1 / 3, 2 / 3, 1];
-
 export default function HowItWorks() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeStep, setActiveStep] = useState(0);
   const stRef = useRef<ScrollTrigger | null>(null);
-  const autoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isAutoScrolling = useRef(false);
-
-  const clearAutoTimer = useCallback(() => {
-    if (autoTimerRef.current) {
-      clearInterval(autoTimerRef.current);
-      autoTimerRef.current = null;
-    }
-  }, []);
-
-  const startAutoPlay = useCallback(() => {
-    clearAutoTimer();
-    autoTimerRef.current = setInterval(() => {
-      const st = stRef.current;
-      if (!st) return;
-      const currentSnap = SNAP_POINTS.findIndex(
-        (p) => Math.abs(st.progress - p) < 0.05
-      );
-      const nextIndex =
-        currentSnap < SNAP_POINTS.length - 1 ? currentSnap + 1 : 0;
-      const targetScroll =
-        st.start + SNAP_POINTS[nextIndex] * (st.end - st.start);
-      isAutoScrolling.current = true;
-      gsap.to(window, {
-        scrollTo: { y: targetScroll },
-        duration: 1.2,
-        ease: "power2.inOut",
-        onComplete: () => {
-          isAutoScrolling.current = false;
-        },
-      });
-    }, AUTO_PLAY_INTERVAL);
-  }, [clearAutoTimer]);
-
-  const pauseAndResume = useCallback(() => {
-    if (isAutoScrolling.current) return;
-    clearAutoTimer();
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
-    resumeTimerRef.current = setTimeout(() => {
-      startAutoPlay();
-    }, AUTO_PLAY_RESUME_DELAY);
-  }, [clearAutoTimer, startAutoPlay]);
-
-  const goToStep = useCallback(
-    (stepIndex: number) => {
-      const st = stRef.current;
-      if (!st) return;
-      const targetScroll =
-        st.start + SNAP_POINTS[stepIndex] * (st.end - st.start);
-      clearAutoTimer();
-      isAutoScrolling.current = true;
-      gsap.to(window, {
-        scrollTo: { y: targetScroll },
-        duration: 1,
-        ease: "power2.inOut",
-        onComplete: () => {
-          isAutoScrolling.current = false;
-          startAutoPlay();
-        },
-      });
-    },
-    [clearAutoTimer, startAutoPlay]
-  );
 
   useEffect(() => {
     if (!triggerRef.current) return;
@@ -218,51 +149,44 @@ export default function HowItWorks() {
         );
       });
 
-      // Rest period (timeline 2 → 3)
-      tl.to({}, { duration: 1 }, 2);
+      // Rest period: subtle drift so photos feel alive (timeline 2 → 3)
+      SCATTER_PHOTOS.forEach((photo, i) => {
+        if (!els[i]) return;
+        const drift = i % 2 === 0 ? -8 : 8;
+        tl.to(
+          els[i]!,
+          {
+            rotation: photo.states[2].rotation + drift * 0.5,
+            scale: photo.states[2].scale + 0.02,
+            duration: 1,
+            ease: "sine.inOut",
+          },
+          2
+        );
+      });
 
       const scrollTrigger = ScrollTrigger.create({
         trigger,
         animation: tl,
         start: "top top",
         end: "bottom bottom",
-        scrub: 1.5,
-        snap: {
-          snapTo: SNAP_POINTS,
-          duration: { min: 0.4, max: 0.8 },
-          ease: "power2.inOut",
-        },
+        scrub: 1,
         onUpdate: (self) => {
           const step = Math.min(2, Math.floor(self.progress * 3));
           setActiveStep(step);
         },
-        onEnter: () => startAutoPlay(),
-        onLeave: () => clearAutoTimer(),
-        onEnterBack: () => startAutoPlay(),
-        onLeaveBack: () => clearAutoTimer(),
       });
 
       stRef.current = scrollTrigger;
-
-      const onUserScroll = () => pauseAndResume();
-      window.addEventListener("wheel", onUserScroll, { passive: true });
-      window.addEventListener("touchmove", onUserScroll, { passive: true });
-
-      return () => {
-        window.removeEventListener("wheel", onUserScroll);
-        window.removeEventListener("touchmove", onUserScroll);
-        clearAutoTimer();
-        if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
-      };
     });
 
     return () => mm.revert();
-  }, [startAutoPlay, clearAutoTimer, pauseAndResume]);
+  }, []);
 
   return (
     <section id="how-it-works" ref={sectionRef} className="bg-white text-black">
       {/* Desktop: sticky viewport with shuffling scatter photos */}
-      <div ref={triggerRef} className="relative min-h-[350vh] hidden md:block">
+      <div ref={triggerRef} className="relative h-[300vh] hidden md:block">
         <div className="sticky top-0 h-[100dvh] overflow-hidden flex flex-col">
           {/* Title */}
           <div className="pt-[24px] lg:pt-[40px] text-center shrink-0">
@@ -324,12 +248,9 @@ export default function HowItWorks() {
             {/* Step indicators */}
             <div className="absolute bottom-[120px] left-0 right-0 z-10 flex justify-center gap-2">
               {FEATURES.map((_, i) => (
-                <button
+                <div
                   key={i}
-                  type="button"
-                  aria-label={`Go to step ${i + 1}`}
-                  onClick={() => goToStep(i)}
-                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                  className={`h-2 rounded-full transition-all duration-300 ${
                     i === activeStep ? "bg-black w-6" : "bg-gray-300 w-2"
                   }`}
                 />
