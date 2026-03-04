@@ -91,7 +91,7 @@ export default function Footer() {
 
             {/* Email input with Get 40% Discount button */}
             {/* Mobile: stacked vertically */}
-            <div className={`relative bg-xforge-input-bg border rounded-[20px] lg:rounded-[12px] flex flex-col lg:flex-row lg:items-center p-1 lg:pl-4 lg:pr-1 lg:py-1 gap-1 lg:gap-0 lg:h-[44px] w-full max-w-[452px] transition-colors duration-200 ${showError ? "border-red-500" : "border-xforge-border"}`}>
+            <div className={`relative bg-xforge-input-bg border rounded-[20px] lg:rounded-[12px] flex flex-col lg:flex-row lg:items-center p-1 lg:pl-4 lg:pr-1 lg:py-1 gap-1 lg:gap-0 lg:h-[44px] w-full max-w-[452px] transition-colors duration-200 ${showError ? "border-red-500 border-2" : "border-xforge-border"}`}>
               <div className="flex items-center justify-center h-[48px] lg:h-auto lg:flex-1 lg:min-w-0">
                 <input
                   ref={inputRef}

@@ -174,7 +174,7 @@ export default function Hero() {
             <div className="bg-white rounded-[16px] p-[6px] sm:p-2 shadow-[0px_1px_4px_0px_rgba(0,0,0,0.12)]">
               <div
                 className={`${S.emailWrap} flex items-center justify-between pl-3 sm:pl-4 pr-1 py-1 h-[40px] sm:h-[44px] ${
-                  showError ? "border-red-500" : "border-xforge-border"
+                    showError ? "border-red-500 border-2" : "border-xforge-border"
                 }`}
               >
                 <input

@@ -45,7 +45,7 @@ export default function EmailSubscription() {
     <div className="w-full max-w-[360px] sm:max-w-[465px]">
       <div
         className={`relative bg-xforge-input-bg border rounded-[20px] md:rounded-[12px] flex flex-col md:flex-row md:items-center p-1 md:pl-4 md:pr-1 md:py-1 gap-1 md:gap-0 md:h-[44px] w-full transition-colors duration-200 ${
-          showError ? "border-red-500" : "border-xforge-border"
+          showError ? "border-red-500 border-2" : "border-xforge-border"
         }`}
       >
         <div className="flex items-center justify-center h-[48px] md:h-auto md:flex-1 md:min-w-0">
