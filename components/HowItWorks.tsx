@@ -1,7 +1,11 @@
-// Scroll-driven photo sequence with crossfade + zoom transitions.
-// Desktop: sticky content inside a tall scroll container. Photos crossfade
-// as the user scrolls, with a cinematic zoom effect (Apple product-page style).
-// Mobile: separate MobileGallery component with swipeable cards.
+// Scroll-driven "scatter" gallery — photos tossed at random positions/rotations.
+// As user scrolls, each feature step's photos scatter in with zoom + rotation,
+// while the previous step's photos scatter away. Reversible on scroll-back.
+//
+// Gallery versions (revert by name):
+//   "circular"  — commit ba773d8
+//   "crossfade" — commit f7cdaad
+//   "scatter"   — this version
 
 "use client";
 
@@ -17,12 +21,32 @@ import MobileGallery from "./how-it-works/MobileGallery";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-const SEQUENCE_PHOTOS = [
-  "/placeholders/carousel-5.png",
-  "/placeholders/carousel-1.png",
-  "/placeholders/carousel-4.png",
-  "/placeholders/carousel-2.png",
+const SCATTER_STEPS = [
+  {
+    photos: [
+      { src: "/placeholders/carousel-5.png", left: "8%", top: "6%", w: 200, h: 220, rot: -12 },
+      { src: "/placeholders/carousel-6.png", left: "60%", top: "2%", w: 185, h: 205, rot: 8 },
+    ],
+  },
+  {
+    photos: [
+      { src: "/placeholders/carousel-1.png", left: "2%", top: "8%", w: 195, h: 230, rot: -8 },
+      { src: "/placeholders/carousel-3.png", left: "33%", top: "-2%", w: 215, h: 255, rot: 3 },
+      { src: "/placeholders/carousel-4.png", left: "67%", top: "12%", w: 175, h: 195, rot: 10 },
+    ],
+  },
+  {
+    photos: [
+      { src: "/placeholders/carousel-2.png", left: "10%", top: "3%", w: 195, h: 230, rot: -5 },
+      { src: "/placeholders/carousel-7.png", left: "56%", top: "0%", w: 200, h: 220, rot: 7 },
+      { src: "/placeholders/carousel-8.png", left: "32%", top: "48%", w: 175, h: 195, rot: -3 },
+    ],
+  },
 ];
+
+const ALL_PHOTOS = SCATTER_STEPS.flatMap((step, si) =>
+  step.photos.map((photo) => ({ ...photo, stepIndex: si }))
+);
 
 const AUTO_PLAY_INTERVAL = 2500;
 const AUTO_PLAY_RESUME_DELAY = 2000;
@@ -56,10 +80,8 @@ export default function HowItWorks() {
       );
       const nextIndex =
         currentSnap < SNAP_POINTS.length - 1 ? currentSnap + 1 : 0;
-      const nextProgress = SNAP_POINTS[nextIndex];
-
       const targetScroll =
-        st.start + nextProgress * (st.end - st.start);
+        st.start + SNAP_POINTS[nextIndex] * (st.end - st.start);
 
       isAutoScrolling.current = true;
       gsap.to(window, {
@@ -86,9 +108,8 @@ export default function HowItWorks() {
     (stepIndex: number) => {
       const st = stRef.current;
       if (!st) return;
-      const targetProgress = SNAP_POINTS[stepIndex];
       const targetScroll =
-        st.start + targetProgress * (st.end - st.start);
+        st.start + SNAP_POINTS[stepIndex] * (st.end - st.start);
       clearAutoTimer();
       isAutoScrolling.current = true;
       gsap.to(window, {
@@ -111,14 +132,76 @@ export default function HowItWorks() {
     const mm = gsap.matchMedia();
 
     mm.add("(min-width: 768px)", () => {
-      photoRefs.current.forEach((el, i) => {
-        if (!el) return;
-        el.style.opacity = i === 0 ? "1" : "0";
-        el.style.transform = i === 0 ? "scale(1)" : "scale(1.15)";
+      const els = photoRefs.current;
+
+      // Build index ranges per step
+      let idx = 0;
+      const stepRanges = SCATTER_STEPS.map((step) => {
+        const start = idx;
+        idx += step.photos.length;
+        return { start, end: idx };
       });
 
-      const st = ScrollTrigger.create({
+      // Initialize: step 0 visible, rest hidden
+      ALL_PHOTOS.forEach((photo, i) => {
+        if (!els[i]) return;
+        if (photo.stepIndex === 0) {
+          gsap.set(els[i]!, { opacity: 1, scale: 1, rotation: photo.rot, x: 0, y: 0 });
+        } else {
+          gsap.set(els[i]!, { opacity: 0, scale: 0.4, rotation: photo.rot + 20, x: 0, y: 40 });
+        }
+      });
+
+      // Build scatter timeline: 3 units total (one per scroll segment)
+      const tl = gsap.timeline();
+
+      // Transition 0→1 (timeline 0 → 1)
+      const s0 = stepRanges[0];
+      const s1 = stepRanges[1];
+      for (let i = s0.start; i < s0.end; i++) {
+        const dir = i % 2 === 0 ? -1 : 1;
+        tl.to(els[i]!, {
+          opacity: 0, scale: 0.5, y: -50, x: dir * 80,
+          rotation: `+=${dir * 20}`,
+          duration: 0.45, ease: "power2.in",
+        }, 0.05 + (i - s0.start) * 0.05);
+      }
+      for (let i = s1.start; i < s1.end; i++) {
+        const photo = ALL_PHOTOS[i];
+        tl.to(els[i]!, {
+          opacity: 1, scale: 1, y: 0, x: 0,
+          rotation: photo.rot,
+          duration: 0.55, ease: "power2.out",
+        }, 0.25 + (i - s1.start) * 0.06);
+      }
+
+      // Transition 1→2 (timeline 1 → 2)
+      const s2 = stepRanges[2];
+      for (let i = s1.start; i < s1.end; i++) {
+        const dir = (i - s1.start) % 2 === 0 ? -1 : 1;
+        tl.to(els[i]!, {
+          opacity: 0, scale: 0.5, y: -50, x: dir * 80,
+          rotation: `+=${dir * 20}`,
+          duration: 0.45, ease: "power2.in",
+        }, 1.05 + (i - s1.start) * 0.05);
+      }
+      for (let i = s2.start; i < s2.end; i++) {
+        const photo = ALL_PHOTOS[i];
+        tl.to(els[i]!, {
+          opacity: 1, scale: 1, y: 0, x: 0,
+          rotation: photo.rot,
+          duration: 0.55, ease: "power2.out",
+        }, 1.25 + (i - s2.start) * 0.06);
+      }
+
+      // Rest period: step 2 photos gently float (timeline 2 → 3)
+      for (let i = s2.start; i < s2.end; i++) {
+        tl.to(els[i]!, { y: -6, duration: 1, ease: "sine.inOut" }, 2);
+      }
+
+      const scrollTrigger = ScrollTrigger.create({
         trigger,
+        animation: tl,
         start: "top top",
         end: "bottom bottom",
         scrub: 1.5,
@@ -128,28 +211,8 @@ export default function HowItWorks() {
           ease: "power2.inOut",
         },
         onUpdate: (self) => {
-          const progress = self.progress;
-          const step = Math.min(2, Math.floor(progress * 3));
+          const step = Math.min(2, Math.floor(self.progress * 3));
           setActiveStep(step);
-
-          // 4 photos → 3 transitions, mapped linearly to progress 0–1
-          const count = SEQUENCE_PHOTOS.length;
-          const p = progress * (count - 1);
-          const idx = Math.min(Math.floor(p), count - 2);
-          const blend = p - idx;
-
-          photoRefs.current.forEach((el, i) => {
-            if (!el) return;
-            if (i === idx) {
-              el.style.opacity = String(1 - blend);
-              el.style.transform = `scale(${1 + blend * 0.08})`;
-            } else if (i === idx + 1) {
-              el.style.opacity = String(blend);
-              el.style.transform = `scale(${1.15 - blend * 0.15})`;
-            } else {
-              el.style.opacity = "0";
-            }
-          });
         },
         onEnter: () => startAutoPlay(),
         onLeave: () => clearAutoTimer(),
@@ -157,7 +220,7 @@ export default function HowItWorks() {
         onLeaveBack: () => clearAutoTimer(),
       });
 
-      stRef.current = st;
+      stRef.current = scrollTrigger;
 
       const onUserScroll = () => pauseAndResume();
       window.addEventListener("wheel", onUserScroll, { passive: true });
@@ -186,25 +249,31 @@ export default function HowItWorks() {
             </h2>
           </div>
 
-          {/* Scroll-driven photo sequence — crossfade + zoom */}
-          <div className="relative mt-[16px] lg:mt-[24px] mx-auto flex items-center justify-center h-[min(calc(100dvh-370px),500px)]">
-            {SEQUENCE_PHOTOS.map((src, i) => (
+          {/* Scatter gallery — photos at random positions/rotations */}
+          <div className="relative mt-4 lg:mt-6 mx-auto w-full max-w-[950px] h-[min(calc(100dvh-370px),500px)]">
+            {ALL_PHOTOS.map((photo, i) => (
               <div
                 key={i}
                 ref={(el) => {
                   photoRefs.current[i] = el;
                 }}
-                className="absolute w-[260px] h-[320px] lg:w-[320px] lg:h-[400px] rounded-2xl lg:rounded-3xl overflow-hidden shadow-[0px_8px_24px_rgba(0,0,0,0.15)] will-change-transform"
-                style={{ opacity: i === 0 ? 1 : 0 }}
+                className="absolute rounded-2xl overflow-hidden shadow-[0px_5px_15px_rgba(0,0,0,0.2)] will-change-transform"
+                style={{
+                  left: photo.left,
+                  top: photo.top,
+                  width: photo.w,
+                  height: photo.h,
+                  opacity: photo.stepIndex === 0 ? 1 : 0,
+                }}
               >
                 <Image
-                  src={src}
-                  alt={`XForge feature ${i + 1}`}
-                  width={320}
-                  height={400}
+                  src={photo.src}
+                  alt={`XForge photo`}
+                  width={photo.w}
+                  height={photo.h}
                   className="w-full h-full object-cover"
                   style={
-                    src.includes("carousel-4")
+                    photo.src.includes("carousel-4")
                       ? { objectPosition: "35% center" }
                       : undefined
                   }
