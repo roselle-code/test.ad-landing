@@ -1,8 +1,7 @@
-// Carousel photo order follows Figma's circular path layout (left-to-right angular order).
-// Reordering this array changes which photos appear in which positions.
-// After reordering, you must recalculate INITIAL_ROTATION to center the desired photo.
+// Photo and feature configuration for the How It Works section.
+// PHOTOS is used by the mobile swipeable gallery (MobileGallery.tsx).
+// FEATURES defines the 3 feature steps shown on both desktop and mobile.
 
-// Base 8 photos — used by mobile (which slices to first 5)
 export const PHOTOS = [
   "/placeholders/carousel-6.png",
   "/placeholders/carousel-5.png",
@@ -14,10 +13,6 @@ export const PHOTOS = [
   "/placeholders/carousel-7.png",
 ];
 
-// Desktop doubles the photos to fill more of the circular arc,
-// so zoomed-out or wide viewports still see a complete gallery.
-export const DESKTOP_PHOTOS = [...PHOTOS, ...PHOTOS];
-
 export const FEATURES = [
   {
     title: "Use It Like Any Smartphone",
@@ -27,7 +22,7 @@ export const FEATURES = [
   {
     title: "It Contributes in the Background",
     description:
-      "While you go about your day, XForge quietly uses your phone’s unused power to help with storage, connectivity, and compute—without affecting performance.",
+      "While you go about your day, XForge quietly uses your phone's unused power to help with storage, connectivity, and compute—without affecting performance.",
   },
   {
     title: "You Earn Rewards & Perks",
@@ -35,27 +30,3 @@ export const FEATURES = [
       "Your participation generates real value. Earn reward points redeemable for perks, discounts, and exclusive benefits in the ecosystem.",
   },
 ];
-
-export const RADIUS = 1100;
-const DESKTOP_PHOTO_COUNT = DESKTOP_PHOTOS.length;
-const ANGLE_STEP = 16;
-const START_ANGLE = -((DESKTOP_PHOTO_COUNT - 1) / 2) * ANGLE_STEP;
-// TOTAL_ROTATION: must be a multiple of ANGLE_STEP so a photo is centered at each step.
-// 2 transitions × 16° = 32°. Negative = counter-clockwise.
-export const TOTAL_ROTATION = -32;
-export const PHOTO_TOP_OFFSET = 60;
-// INITIAL_ROTATION: centers carousel-5.png (index 9 in the doubled array) at 12 o'clock.
-// Index 9 angle = START_ANGLE + 9 * 16 = -120 + 144 = 24°. Negate to center: -24°.
-export const INITIAL_ROTATION = -24;
-
-export function getPhotoStyle(index: number) {
-  const angleDeg = START_ANGLE + index * ANGLE_STEP;
-  const angleRad = (angleDeg * Math.PI) / 180;
-  const x = RADIUS * Math.sin(angleRad);
-  const y = RADIUS * (1 - Math.cos(angleRad));
-  return {
-    left: `calc(50% + ${x}px - 110px)`,
-    top: `${y + PHOTO_TOP_OFFSET}px`,
-    transform: `rotate(${angleDeg}deg)`,
-  };
-}
