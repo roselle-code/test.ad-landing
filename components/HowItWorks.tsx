@@ -8,11 +8,12 @@
 
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import {
   DESKTOP_PHOTOS,
   FEATURES,
@@ -25,13 +26,65 @@ import {
 import EmailSubscription from "./how-it-works/EmailSubscription";
 import MobileGallery from "./how-it-works/MobileGallery";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+const AUTO_PLAY_INTERVAL = 2500;
+const AUTO_PLAY_RESUME_DELAY = 2000;
+const SNAP_POINTS = [0, 0.33, 0.66, 1];
 
 export default function HowItWorks() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const wheelRef = useRef<HTMLDivElement>(null);
   const [activeStep, setActiveStep] = useState(0);
+  const stRef = useRef<ScrollTrigger | null>(null);
+  const autoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isAutoScrolling = useRef(false);
+
+  const clearAutoTimer = useCallback(() => {
+    if (autoTimerRef.current) {
+      clearInterval(autoTimerRef.current);
+      autoTimerRef.current = null;
+    }
+  }, []);
+
+  const startAutoPlay = useCallback(() => {
+    clearAutoTimer();
+    autoTimerRef.current = setInterval(() => {
+      const st = stRef.current;
+      if (!st) return;
+
+      const currentSnap = SNAP_POINTS.findIndex(
+        (p) => Math.abs(st.progress - p) < 0.05
+      );
+      const nextIndex = currentSnap < SNAP_POINTS.length - 1 ? currentSnap + 1 : 0;
+      const nextProgress = SNAP_POINTS[nextIndex];
+
+      const scrollStart = st.start;
+      const scrollEnd = st.end;
+      const targetScroll = scrollStart + nextProgress * (scrollEnd - scrollStart);
+
+      isAutoScrolling.current = true;
+      gsap.to(window, {
+        scrollTo: { y: targetScroll },
+        duration: 1.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          isAutoScrolling.current = false;
+        },
+      });
+    }, AUTO_PLAY_INTERVAL);
+  }, [clearAutoTimer]);
+
+  const pauseAndResume = useCallback(() => {
+    if (isAutoScrolling.current) return;
+    clearAutoTimer();
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      startAutoPlay();
+    }, AUTO_PLAY_RESUME_DELAY);
+  }, [clearAutoTimer, startAutoPlay]);
 
   useEffect(() => {
     if (!triggerRef.current || !wheelRef.current) return;
@@ -51,7 +104,7 @@ export default function HowItWorks() {
           end: "bottom bottom",
           scrub: 1.5,
           snap: {
-            snapTo: [0, 0.33, 0.66, 1],
+            snapTo: SNAP_POINTS,
             duration: { min: 0.4, max: 0.8 },
             ease: "power2.inOut",
           },
@@ -59,14 +112,30 @@ export default function HowItWorks() {
             const step = Math.min(2, Math.floor(self.progress * 3));
             setActiveStep(step);
           },
+          onEnter: () => startAutoPlay(),
+          onLeave: () => clearAutoTimer(),
+          onEnterBack: () => startAutoPlay(),
+          onLeaveBack: () => clearAutoTimer(),
         },
       });
 
+      stRef.current = tl.scrollTrigger!;
       tl.to(wheel, { rotation: INITIAL_ROTATION + TOTAL_ROTATION, ease: "none" }, 0);
+
+      const onUserScroll = () => pauseAndResume();
+      window.addEventListener("wheel", onUserScroll, { passive: true });
+      window.addEventListener("touchmove", onUserScroll, { passive: true });
+
+      return () => {
+        window.removeEventListener("wheel", onUserScroll);
+        window.removeEventListener("touchmove", onUserScroll);
+        clearAutoTimer();
+        if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+      };
     });
 
     return () => mm.revert();
-  }, []);
+  }, [startAutoPlay, clearAutoTimer, pauseAndResume]);
 
   return (
     <section id="how-it-works" ref={sectionRef} className="bg-white text-black">
@@ -80,7 +149,7 @@ export default function HowItWorks() {
             </h2>
           </div>
 
-          <div className="relative mt-[12px] lg:mt-[16px] mx-auto w-full h-[min(calc(100dvh-380px),500px)] overflow-visible">
+          <div className="relative mt-[12px] lg:mt-[16px] mx-auto w-full max-w-[1200px] h-[min(calc(100dvh-380px),500px)] overflow-visible">
             <div
               ref={wheelRef}
               className="absolute inset-0 will-change-transform"
