@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Inter_Tight, IBM_Plex_Serif, Space_Grotesk } from "next/font/google";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { SITE_URL } from "@/lib/utils";
 import "./globals.css";
 
-// UPDATE HERE when domain changes — affects canonical URL, OG tags, and sitemap
-const SITE_URL = "https://pre-xforge-ks-landing-nh4h.vercel.app";
 const SITE_NAME = "XForge Phone";
 
 const interTight = Inter_Tight({

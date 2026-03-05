@@ -44,8 +44,7 @@ Visit → Hero (video + email CTA)
 | React | 19.2.3 | UI library |
 | TypeScript | ^5 | Type safety |
 | Tailwind CSS | ^4 | Styling (custom theme in globals.css) |
-| Framer Motion | ^12.34.3 | UI animations, transitions |
-| GSAP + ScrollTrigger | ^3.14.2 | Scroll-driven carousel animations |
+| Framer Motion | ^12.34.3 | UI animations, transitions, scroll reveals |
 | Vercel | — | Deployment platform |
 
 **Node version:** 18+ recommended (LTS). Not pinned in package.json.
@@ -135,7 +134,7 @@ Where to update key values:
 | What | File | Location |
 |------|------|----------|
 | **Kickstarter URL** | `lib/utils.ts` | `KICKSTARTER_URL` constant |
-| **Site domain** | `app/layout.tsx` | `SITE_URL` constant (line 5) |
+| **Site domain** | `lib/utils.ts` | `SITE_URL` constant |
 | **Page title & meta description** | `app/layout.tsx` | `metadata` export |
 | **Reserve page meta** | `app/reserve/layout.tsx` | `metadata` export |
 | **OG image** | `app/layout.tsx` | `metadata.openGraph.images` |
@@ -235,14 +234,14 @@ Partners.tsx
 └── ⚠ Change impact: Logo marquee, auto-scroll behavior
 
 MosaicGallery.tsx
-├── Depends on: gsap, ScrollTrigger, lib/animations, lib/analytics, lib/utils
+├── Depends on: framer-motion, lib/animations, lib/analytics, lib/utils
 ├── Used by: app/page.tsx
-└── ⚠ Change impact: Circular photo carousel, scroll-pinned animation, email form
+└── ⚠ Change impact: Mosaic photo grid, scroll-reveal animations, email form
 
 WhyDifferent.tsx
-├── Depends on: lib/animations, framer-motion
+├── Depends on: lib/animations, framer-motion, next/image
 ├── Used by: app/page.tsx
-└── ⚠ Change impact: Reward counter animation, phone mockup
+└── ⚠ Change impact: Reward counter animation, phone mockup, floating badges
 
 TechSpecs.tsx
 ├── Depends on: lib/animations, framer-motion, next/image
@@ -282,7 +281,7 @@ lib/analytics.ts
 | `app/globals.css` | **Critical** | Tailwind theme tokens, keyframes, reduced-motion. All styling depends on this. |
 | `lib/animations.ts` | **High** | Shared button styles (`S.btnGold`, `S.emailWrap`, etc.) used by 7 components. Changing class strings breaks all CTAs. |
 | `components/MosaicGallery.tsx` | **Low** | Static mosaic grid with Framer Motion parallax and hover effects. No complex scroll logic. |
-| `components/WhyDifferent.tsx` | **High** | GSAP scroll animations + animated counter. Mobile/desktop split logic. |
+| `components/WhyDifferent.tsx` | **High** | Framer Motion scroll animations + animated counter. Mobile/desktop split logic. |
 | `app/api/subscribe/route.ts` | **High** | Email capture pipeline. Breaking this loses leads. |
 | `next.config.ts` | **Medium** | Security headers. Misconfiguration can block resources. |
 | `components/Hero.tsx` | **Medium** | Video lazy loading + IntersectionObserver. First impression — must work. |
@@ -303,7 +302,7 @@ lib/analytics.ts
 
 **OG image requirements:**
 - Recommended: 1200×630px
-- Current: `/placeholders/phone-hero.png` (root), `/placeholders/reserve-product.webp` (reserve)
+- Current: `/placeholders/reserve-product.webp` (root + reserve)
 - Must be publicly accessible after deploy
 
 **Canonical URLs:**
@@ -358,7 +357,7 @@ lib/analytics.ts
 | **Image optimization** | `next/image` with automatic WebP/AVIF conversion, lazy loading by default |
 | **Video lazy loading** | Hero video uses `preload="none"` + `IntersectionObserver` — only loads when section is 25% visible |
 | **Responsive video** | Desktop gets landscape WebM, mobile gets portrait WebM (detected via `matchMedia`) |
-| **Animation GPU acceleration** | `will-change-transform` on GSAP-animated elements, `transform` and `opacity` only for animations |
+| **Animation GPU acceleration** | `will-change-transform` on animated elements, `transform` and `opacity` only for animations |
 | **Bundle splitting** | Next.js automatic code splitting per route |
 | **Font optimization** | `next/font/google` with `variable` loading — no FOUT |
 | **Layout shift prevention** | Fixed dimensions on images, `h-[100dvh]` on hero to prevent CLS |
@@ -366,8 +365,8 @@ lib/analytics.ts
 
 **Mobile performance notes:**
 - Partner marquee uses CSS animation (GPU-composited) not JS
-- GSAP ScrollTrigger is only initialized on `md:` breakpoint for desktop carousel
-- Mobile carousel has its own lighter GSAP timeline
+- Framer Motion `whileInView` handles scroll-triggered animations efficiently
+- Mobile and desktop layouts use separate component trees for optimal rendering
 
 ---
 
@@ -388,7 +387,7 @@ lib/analytics.ts
 | Risk | Details | Mitigation |
 |------|---------|------------|
 | **Safari 100vh** | Address bar causes viewport height issues | Using `100dvh` (dynamic viewport height) |
-| **GSAP ScrollTrigger pin on iOS** | Pinned sections can jump or flash | Mobile uses separate, simpler GSAP timeline without pin |
+| **Framer Motion on iOS** | `whileInView` may fire late if scroll is very fast | Use `margin` prop on `viewport` to trigger animations earlier |
 | **Safari backdrop-filter** | May have rendering artifacts | `-webkit-backdrop-filter` prefix included via Tailwind |
 | **WebM video** | Safari 16+ supports WebM; older versions don't | Video is progressive enhancement — page works without it |
 | **SVG preserveAspectRatio** | Some SVGs had `none` causing distortion | Fixed to `xMidYMid meet` |
@@ -450,8 +449,7 @@ lib/analytics.ts
 
 | Gotcha | Details |
 |--------|---------|
-| **ScrollTrigger pin + mobile** | Desktop carousel uses `pin: true` which can cause issues on mobile Safari. The mobile `MobileView` component uses a separate, non-pinned GSAP timeline as a workaround. |
-| **GSAP + React strict mode** | GSAP ScrollTrigger instances must be cleaned up in `useEffect` return. Failing to do so causes duplicate pins. |
+| **Framer Motion viewport detection** | `whileInView` triggers based on IntersectionObserver. Use `viewport={{ margin }}` to adjust trigger timing for fast scrolls. |
 | **next/image + SVG** | SVGs used via `next/image` must have `width`/`height` or `fill` prop. Some SVGs have `preserveAspectRatio="none"` which causes distortion — use `xMidYMid meet` instead. |
 | **Client-only window access** | `window.matchMedia` in Hero (video source detection) is only called inside `useEffect`/`useCallback` to avoid SSR errors. |
 | **Hard-coded spacing** | Tailwind arbitrary values like `h-[calc(100dvh-380px)]` are tuned for specific content heights. Changing text content may require recalibrating these. |
@@ -459,6 +457,7 @@ lib/analytics.ts
 | **Safari viewport height** | `100vh` doesn't account for Safari's address bar. Always use `100dvh` for full-viewport sections. |
 | **Subscriber JSON file** | `data/subscribers.json` is written by the API at runtime. On Vercel (serverless), this file is ephemeral — it resets on each deployment. Use Mailchimp as the persistent store. |
 | **Mosaic photo order** | Photos in `MosaicGallery.tsx` are arranged in a CSS Grid mosaic layout matching Figma. Grid positions are set via `gridTemplateColumns` and `gridTemplateRows`. |
+| **Site URL constant** | `SITE_URL` in `lib/utils.ts` is the single source of truth for the site domain. Update it there when the domain changes — `layout.tsx`, `page.tsx`, `sitemap.ts`, and `robots.ts` all import from it. |
 
 ---
 

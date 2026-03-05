@@ -1,5 +1,5 @@
 // Footer with email CTA, legal links, and pattern background.
-// Dependencies: lib/animations (S.btnGold, S.emailWrap, fadeInUp), lib/analytics, lib/utils
+// Dependencies: lib/animations (S.btnGold, S.emailWrap), lib/analytics, lib/utils
 // Connected to: /api/subscribe (email form), /reserve (redirect after submit)
 // Contains hardcoded links to /terms-and-conditions and /privacy-policy.
 

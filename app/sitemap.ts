@@ -1,17 +1,16 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/utils";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://pre-xforge-ks-landing-nh4h.vercel.app";
-
   return [
     {
-      url: baseUrl,
+      url: SITE_URL,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${baseUrl}/reserve`,
+      url: `${SITE_URL}/reserve`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,

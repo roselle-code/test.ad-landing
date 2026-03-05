@@ -5,6 +5,7 @@ import WhyDifferent from "@/components/WhyDifferent";
 import TechSpecs from "@/components/TechSpecs";
 import WhyReserve from "@/components/WhyReserve";
 import Footer from "@/components/Footer";
+import { SITE_URL } from "@/lib/utils";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -13,14 +14,14 @@ const jsonLd = {
   description:
     "XForge is a premium Android smartphone powered by on-device AI built to reward you.",
   brand: { "@type": "Brand", name: "XForge" },
-  image: "https://pre-xforge-ks-landing-nh4h.vercel.app/placeholders/reserve-product.png",
-  url: "https://pre-xforge-ks-landing-nh4h.vercel.app",
+  image: `${SITE_URL}/placeholders/reserve-product.webp`,
+  url: SITE_URL,
   offers: {
     "@type": "Offer",
     price: "299",
     priceCurrency: "USD",
     availability: "https://schema.org/PreOrder",
-    url: "https://pre-xforge-ks-landing-nh4h.vercel.app/reserve",
+    url: `${SITE_URL}/reserve`,
     priceValidUntil: "2027-12-31",
   },
   aggregateRating: undefined,
