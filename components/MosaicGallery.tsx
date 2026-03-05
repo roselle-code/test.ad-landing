@@ -195,18 +195,24 @@ export default function MosaicGallery() {
         {/* ── Mobile mosaic ─────────────────────────── */}
         <div className="flex flex-col gap-[8px] md:hidden">
           {/* Group 1: Dog (tall left) + accessories & rewards (right) + text card & selfie */}
-          <div className="grid gap-[4px]" style={{
-            gridTemplateColumns: "44% 1fr",
-            gridTemplateRows: "85px 121px 104px",
-          }}>
-            <PhotoCard src="/placeholders/carousel-4.webp" alt="Camera with dog" className="row-span-2" objectPosition="25% 15%" sizes="50vw" index={0} />
-            <PhotoCard src="/placeholders/carousel-6.webp" alt="XForge on desk" className="" objectPosition="center 50%" sizes="50vw" index={1} />
-            <PhotoCard src="/placeholders/carousel-2.webp" alt="Rewards dashboard" className="" objectPosition="center center" sizes="50vw" index={2} />
-            {/* Text card */}
-            <div className="relative overflow-hidden rounded-[9px] flex items-center px-3">
-              <TypingReveal fontSize="text-[20px]" />
+          <div className="flex flex-col gap-[4px]">
+            <div className="grid gap-[4px]" style={{
+              gridTemplateColumns: "44% 1fr",
+              gridTemplateRows: "85px 121px",
+            }}>
+              <PhotoCard src="/placeholders/carousel-4.webp" alt="Camera with dog" className="row-span-2" objectPosition="25% 15%" sizes="50vw" index={0} />
+              <PhotoCard src="/placeholders/carousel-6.webp" alt="XForge on desk" className="" objectPosition="center 50%" sizes="50vw" index={1} />
+              <PhotoCard src="/placeholders/carousel-2.webp" alt="Rewards dashboard" className="" objectPosition="center center" sizes="50vw" index={2} />
             </div>
-            <PhotoCard src="/placeholders/carousel-8.webp" alt="Holding XForge" className="" objectPosition="65% 35%" sizes="50vw" index={4} />
+            <div className="grid gap-[4px]" style={{
+              gridTemplateColumns: "54% 1fr",
+              gridTemplateRows: "104px",
+            }}>
+              <div className="flex items-center px-3">
+                <TypingReveal fontSize="text-[20px]" />
+              </div>
+              <PhotoCard src="/placeholders/carousel-8.webp" alt="Holding XForge" className="" objectPosition="65% 35%" sizes="50vw" index={4} />
+            </div>
           </div>
 
           {/* Group 2: Desktop + box (side by side), MOBA & back (full width) */}
