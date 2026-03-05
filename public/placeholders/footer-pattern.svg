@@ -1,5 +1,5 @@
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-  <g fill="none" stroke="#ffffff" stroke-width="0.6" opacity="0.15">
+  <g fill="none" stroke="#ffffff" stroke-width="0.6" opacity="0.35">
     <path d="M24 8 L28 24 L24 40 L20 24 Z"/>
     <path d="M8 24 L24 20 L40 24 L24 28 Z"/>
   </g>

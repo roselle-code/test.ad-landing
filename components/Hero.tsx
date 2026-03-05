@@ -140,11 +140,12 @@ export default function Hero() {
           {/* Left: Logos + Title */}
           <div className="flex flex-col gap-3 lg:gap-6 max-w-[647px]">
             {/* XForge × Kickstarter logos */}
-            <div className="relative w-[200px] h-[14px] sm:w-[320px] sm:h-[22px] lg:w-[409px] lg:h-[28px]">
+            <div className="relative w-[200px] h-[15px] sm:w-[320px] sm:h-[24px] lg:w-[424px] lg:h-[32px]">
               <Image
-                src="/placeholders/xforge-kickstarter-logos.svg"
+                src="/placeholders/footer-logo.svg"
                 alt="XForge × Kickstarter"
                 fill
+                priority
                 className="object-contain object-left"
               />
             </div>

@@ -20,15 +20,6 @@ export const scaleIn: Variants = {
   },
 };
 
-export const staggerContainer: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
 export const S = {
   btnGold:
     "bg-gradient-to-b from-xforge-gold to-xforge-gold-light border border-xforge-gold-border shadow-[0px_0px_0px_1px_#fbc946,0px_1px_2px_0px_rgba(0,0,0,0.3)] text-xforge-black leading-[1.1] transition-all duration-200 hover:brightness-110 hover:shadow-[0px_0px_20px_4px_rgba(255,188,14,0.5),0px_0px_0px_1px_#fbc946,0px_1px_2px_0px_rgba(0,0,0,0.3)]",

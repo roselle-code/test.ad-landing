@@ -6,7 +6,6 @@
 
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
-import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 const ICON_ANIMATIONS: Record<string, Variants> = {
   OS: {
@@ -139,38 +138,33 @@ export default function TechSpecs() {
       <div className="max-w-[1096px] mx-auto px-4 sm:px-6">
         {/* Title */}
         <motion.h2
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          variants={fadeInUp}
+          transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1] }}
           className="text-[20px] sm:text-[28px] lg:text-[32px] font-semibold leading-[1.1] text-white text-center mb-8 sm:mb-8 lg:mb-10"
         >
           This is the next generation of mobile technology
         </motion.h2>
 
         {/* Specs Grid */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="flex flex-col gap-2 sm:gap-4 lg:gap-6 max-w-[986px] mx-auto"
-        >
+        <div className="flex flex-col gap-2 sm:gap-4 lg:gap-6 max-w-[986px] mx-auto">
           {SPECS.map((row, rowIndex) => (
-            <motion.div
+            <div
               key={rowIndex}
-              variants={fadeInUp}
               className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4"
             >
-              {row.map((spec) => (
+              {row.map((spec, colIndex) => (
                 <motion.div
                   key={spec.title}
-                  initial="idle"
+                  initial={{ opacity: 0, y: 35 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1], delay: (rowIndex * 4 + colIndex) * 0.12 }}
                   whileHover="active"
                   whileTap="active"
                   className="flex flex-col gap-2 items-center justify-center text-center p-2 rounded-[24px] lg:rounded-[28px] border border-[#272727] h-[121px] sm:h-[130px] md:h-[140px] lg:h-[150px] cursor-pointer will-change-transform"
                   variants={{
-                    idle: { y: 0, scale: 1 },
                     active: {
                       y: -6,
                       scale: 1.03,
@@ -201,9 +195,9 @@ export default function TechSpecs() {
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

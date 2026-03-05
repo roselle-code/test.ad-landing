@@ -9,7 +9,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { fadeInUp, S } from "@/lib/animations";
+import { S } from "@/lib/animations";
 import { trackEmailSubmit } from "@/lib/analytics";
 import { isValidEmail } from "@/lib/utils";
 
@@ -63,10 +63,10 @@ export default function Footer() {
         <div className="flex flex-col items-center gap-10 lg:gap-[84px] w-full">
           {/* Logo */}
           <motion.div
-            initial="hidden"
-            whileInView="visible"
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            variants={fadeInUp}
+            transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1] }}
           >
             <Image
               src="/placeholders/footer-logo.svg"
@@ -79,10 +79,10 @@ export default function Footer() {
 
           {/* Info */}
           <motion.div
-            initial="hidden"
-            whileInView="visible"
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            variants={fadeInUp}
+            transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1], delay: 0.3 }}
             className="flex flex-col items-center gap-4 w-full"
           >
             <h2 className="text-[32px] lg:text-[44px] font-semibold leading-[1.1] text-white text-center">
@@ -151,10 +151,10 @@ export default function Footer() {
 
         {/* Footer links */}
         <motion.div
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          variants={fadeInUp}
+          transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1], delay: 0.5 }}
           className="flex flex-col-reverse lg:flex-row items-center justify-between gap-4 lg:gap-0 w-full text-[11px] lg:text-sm leading-[1.1] text-[#707070]"
         >
           <p className="font-normal text-center">

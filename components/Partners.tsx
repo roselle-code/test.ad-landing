@@ -120,7 +120,11 @@ export default function Partners() {
     <section className="w-full bg-black py-10 sm:py-14 lg:py-[80px] overflow-hidden">
       <div className="max-w-[1440px] mx-auto flex flex-col items-center gap-8 sm:gap-10 lg:gap-[60px]">
         {/* Logo marquee with manual scroll override */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1] }}
           className="w-full relative"
           style={{
             WebkitMaskImage:
@@ -158,17 +162,22 @@ export default function Partners() {
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Description text */}
-        <p className="text-[20px] sm:text-[26px] lg:text-[32px] font-semibold leading-[1.1] text-center px-6 sm:px-10">
+        <motion.p
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1], delay: 0.3 }}
+          className="text-[20px] sm:text-[26px] lg:text-[32px] font-semibold leading-[1.1] text-center px-6 sm:px-10">
           <span className="font-serif italic text-xforge-gold">
             World-class partners
           </span>
           <span className="text-white">
             {" "}bring elite mobile power to your pocket.
           </span>
-        </p>
+        </motion.p>
       </div>
     </section>
   );

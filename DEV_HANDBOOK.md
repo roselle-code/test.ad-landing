@@ -303,7 +303,7 @@ lib/analytics.ts
 
 **OG image requirements:**
 - Recommended: 1200×630px
-- Current: `/placeholders/phone-hero.png` (root), `/placeholders/reserve-product.png` (reserve)
+- Current: `/placeholders/phone-hero.png` (root), `/placeholders/reserve-product.webp` (reserve)
 - Must be publicly accessible after deploy
 
 **Canonical URLs:**

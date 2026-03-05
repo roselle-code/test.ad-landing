@@ -79,7 +79,7 @@ export const metadata: Metadata = {
       "XForge is a premium Android smartphone powered by on-device AI built to reward you.",
     images: [
       {
-        url: "/placeholders/reserve-product.png",
+        url: "/placeholders/reserve-product.webp",
         width: 1200,
         height: 630,
         alt: "XForge Phone",
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
     title: "Meet XForge. The AI smartphone that pays it forward.",
     description:
       "XForge is a premium Android smartphone powered by on-device AI built to reward you.",
-    images: ["/placeholders/reserve-product.png"],
+    images: ["/placeholders/reserve-product.webp"],
   },
   alternates: {
     canonical: SITE_URL,

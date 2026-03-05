@@ -6,7 +6,6 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { fadeInUp } from "@/lib/animations";
 
 
 export default function WhyReserve() {
@@ -15,10 +14,10 @@ export default function WhyReserve() {
       <div className="max-w-[874px] mx-auto px-4 sm:px-6 flex flex-col items-center gap-8 lg:gap-[48px]">
         {/* Title */}
         <motion.h2
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          variants={fadeInUp}
+          transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1] }}
           className="text-[20px] sm:text-[28px] md:text-[36px] lg:text-[40px] font-semibold leading-[1.1] text-black text-center"
         >
           <span>Why reserve with </span>
@@ -27,10 +26,10 @@ export default function WhyReserve() {
 
         {/* Content Container */}
         <motion.div
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          variants={fadeInUp}
+          transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1], delay: 0.3 }}
           className="flex flex-col items-center gap-4 w-full"
         >
           {/* Subtitle */}
@@ -82,10 +81,10 @@ export default function WhyReserve() {
 
         {/* Payment info */}
         <motion.div
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          variants={fadeInUp}
+          transition={{ duration: 1.2, ease: [0.12, 1, 0.2, 1], delay: 0.5 }}
           className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm lg:text-base font-normal leading-[1.3] text-black text-center"
         >
           <Image

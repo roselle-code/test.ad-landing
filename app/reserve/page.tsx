@@ -87,7 +87,7 @@ function ProductImage() {
   return (
     <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[550px] rounded-[12px] overflow-hidden bg-[#050505]">
       <Image
-        src="/placeholders/reserve-photo.png"
+        src="/placeholders/reserve-photo.webp"
         alt="XForge Phone"
         fill
         className="object-cover object-top"
@@ -96,10 +96,10 @@ function ProductImage() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
       <div className="absolute bottom-5 sm:bottom-8 left-5 sm:left-8 z-10 flex flex-col gap-3 sm:gap-4">
         <Image
-          src="/placeholders/nav-logos-white.svg"
+          src="/placeholders/footer-logo.svg"
           alt="XForge × Kickstarter"
           width={200}
-          height={18}
+          height={15}
           className="h-[14px] sm:h-[18px] w-auto"
         />
         <p className="text-[24px] sm:text-[32px] lg:text-[38px] font-semibold leading-[1.1]">
