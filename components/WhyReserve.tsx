@@ -21,7 +21,7 @@ export default function WhyReserve() {
           className="text-[20px] sm:text-[28px] md:text-[36px] lg:text-[40px] font-semibold leading-[1.1] text-black text-center"
         >
           <span>Why reserve with </span>
-          <span className="font-serif italic font-bold underline">$3</span>
+          <span className="font-bold">$3</span>
         </motion.h2>
 
         {/* Content Container */}
