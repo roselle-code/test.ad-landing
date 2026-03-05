@@ -85,34 +85,30 @@ export default function ReservePage() {
 
 function ProductImage() {
   return (
-    <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[550px] rounded-[16px] overflow-hidden">
+    <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[550px] rounded-[12px] overflow-hidden bg-[#050505]">
       <Image
         src="/placeholders/reserve-photo.png"
         alt="XForge Phone"
         fill
-        className="object-cover"
+        className="object-cover object-top"
         priority
       />
-      {/* Text overlay matching Figma */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-      <div className="absolute bottom-5 sm:bottom-8 left-5 sm:left-8 z-10 flex flex-col gap-2 sm:gap-3">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/placeholders/nav-logos.svg"
-            alt="XForge × Kickstarter"
-            width={160}
-            height={14}
-            className="h-[12px] sm:h-[14px] w-auto brightness-0 invert"
-          />
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <p className="text-white text-[24px] sm:text-[32px] lg:text-[40px] font-semibold leading-[1.1]">
-            AI Smartphone that
-          </p>
-          <p className="text-[#05ce78] text-[24px] sm:text-[32px] lg:text-[40px] font-bold italic leading-[1.1] font-serif">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
+      <div className="absolute bottom-5 sm:bottom-8 left-5 sm:left-8 z-10 flex flex-col gap-3 sm:gap-4">
+        <Image
+          src="/placeholders/nav-logos-white.svg"
+          alt="XForge × Kickstarter"
+          width={200}
+          height={18}
+          className="h-[14px] sm:h-[18px] w-auto"
+        />
+        <p className="text-[24px] sm:text-[32px] lg:text-[38px] font-semibold leading-[1.1]">
+          <span className="text-white">AI Smartphone that </span>
+          <br />
+          <span className="text-[#ffbc0e] font-serif italic">
             Pays It Forward
-          </p>
-        </div>
+          </span>
+        </p>
       </div>
     </div>
   );

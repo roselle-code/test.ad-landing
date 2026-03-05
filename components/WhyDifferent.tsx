@@ -1,7 +1,6 @@
-// "Why XForge is Different" section: animated reward counter, phone mockup, reward cards.
+// "Why XForge is Different" section — 3 staggered feature blocks with
+// phone mockup, chat placeholder, and hologram placeholder.
 // Dependencies: lib/animations, hooks/useLiveCounter, why-different/RewardCards
-// Counter animation uses requestAnimationFrame for smooth number increment.
-// Desktop/mobile reward cards are separate components for layout differences.
 
 "use client";
 
@@ -26,143 +25,252 @@ export default function WhyDifferent() {
     <section
       ref={sectionRef}
       id="why-different"
-      className="w-full bg-xforge-black py-6 sm:py-10 lg:py-[48px]"
+      className="w-full bg-[#050505] py-12 sm:py-16 lg:py-20"
     >
-      <div className="max-w-[1096px] mx-auto px-4 sm:px-6 flex flex-col-reverse lg:flex-row items-center gap-4 sm:gap-6 lg:gap-5">
-        {/* Phone + Reward Cards wrapper */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={scaleIn}
-          className="relative w-full sm:w-[400px] md:w-[460px] lg:w-[532px] h-[358px] sm:h-[380px] md:h-[420px] lg:h-[532px] flex-shrink-0"
-        >
-          {/* Mobile phone image */}
-          <div className="absolute inset-0 rounded-[16px] overflow-hidden bg-xforge-black lg:hidden">
-            <div
-              className="absolute"
-              style={{
-                left: "50%",
-                top: "-85px",
-                width: "612px",
-                height: "815px",
-                transform: "translateX(-50%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <div style={{ transform: "rotate(11.52deg)" }}>
-                <Image
-                  src="/placeholders/xforge-widget.png"
-                  alt="XForge phone showing network rewards"
-                  width={475}
-                  height={735}
-                  className="max-w-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop phone image */}
-          <div className="absolute inset-0 rounded-3xl overflow-hidden bg-xforge-black hidden lg:block">
-            <div
-              className="absolute"
-              style={{
-                left: "-158px",
-                top: "-120px",
-                width: "903px",
-                height: "1210px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <div style={{ transform: "rotate(11.52deg)" }}>
-                <Image
-                  src="/placeholders/xforge-widget.png"
-                  alt="XForge phone showing network rewards"
-                  width={699}
-                  height={1092}
-                  className="max-w-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          <DesktopRewardCards rewardCount={rewardCount} />
-          <MobileRewardCards rewardCount={rewardCount} />
-        </motion.div>
-
-        {/* Info Container */}
-        <div className="flex-1 min-w-0 flex flex-col items-center lg:items-start gap-6 sm:gap-8 lg:gap-[48px] text-center lg:text-left">
-          <motion.h2
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-            className="text-[20px] sm:text-[28px] md:text-[36px] lg:text-[44px] font-semibold leading-[1.1]"
-          >
-            <span className="text-white">Why XForge is </span>
-            <span className="font-serif italic text-xforge-gold">
-              Different
-            </span>
-          </motion.h2>
-
+      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-[60px]">
+        <h2 className="sr-only">Why XForge is Different</h2>
+        {/* ── Desktop layout (lg+) ─────────────────────────── */}
+        <div className="hidden lg:grid grid-cols-2 gap-x-16 gap-y-10">
+          {/* Row 1 left: Feature 1 */}
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
+            className="flex flex-col gap-2 max-w-[400px] pt-4"
           >
-            <h3 className="text-[18px] sm:text-[20px] md:text-[24px] lg:text-[28px] font-medium leading-[1.1] text-white mb-3 sm:mb-4">
-            You Earn Passively with Real Rewards
+            <h3 className="text-[28px] font-medium leading-[1.1] text-white">
+              <span className="font-serif italic text-[#ffbc0e]">Intelligence</span>
+              {" "}with a purpose
             </h3>
-            <p className="text-[14px] sm:text-sm lg:text-base font-normal leading-[1.3] text-xforge-gray max-w-[486px]">
-              XForge works just like any other smartphone, with no learning
-              curve or new habits to adopt, while quietly supporting a shared
-              network in the background to earn you points, perks, and future
-              benefits.
+            <p className="text-[16px] font-normal leading-[1.3] text-[#999]">
+              {`We built an exclusive hub that pairs a brilliant AI assistant with your daily rewards. It's a powerful tool that makes your life easier while you help power a better internet.`}
             </p>
           </motion.div>
 
-          {/* Stats */}
+          {/* Row 1 right: Chat placeholder */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={scaleIn}
+            className="flex justify-end"
+          >
+            <div className="w-[220px] h-[280px] rounded-[12px] overflow-hidden bg-gradient-to-b from-[#1a1a2e] to-[#0a0a14] border border-[#333] flex items-center justify-center">
+              <Image
+                src="/placeholders/chat-placeholder.png"
+                alt="AI chat assistant"
+                width={220}
+                height={280}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.style.display = "none";
+                  target.parentElement!.innerHTML =
+                    '<span class="text-[#666] text-sm text-center px-4">Chat UI placeholder</span>';
+                }}
+              />
+            </div>
+          </motion.div>
+
+          {/* Row 2 left: Phone mockup with rewards + 24/7 stat */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={scaleIn}
+            className="relative w-full h-[420px]"
+          >
+            {/* Phone container — top visible, bottom cropped */}
+            <div className="relative w-[421px] h-[340px] rounded-[24px] overflow-hidden bg-[#050505]">
+              <div
+                className="absolute"
+                style={{
+                  left: "55%",
+                  top: "10px",
+                  transform: "translateX(-50%)",
+                }}
+              >
+                <div style={{ transform: "rotate(11.52deg)", transformOrigin: "top center" }}>
+                  <Image
+                    src="/placeholders/xforge-widget.png"
+                    alt="XForge phone showing network rewards"
+                    width={586}
+                    height={917}
+                    className="max-w-none"
+                    style={{ width: 550, height: "auto" }}
+                  />
+                </div>
+              </div>
+              <DesktopRewardCards rewardCount={rewardCount} />
+            </div>
+
+            {/* 24/7 stat — at the bottom edge of the phone */}
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <p
+                className="text-[32px] font-medium leading-[1.1] text-[#ffbc0e]"
+                style={{ textShadow: "0px 1px 20.2px #ffee53" }}
+              >
+                24/7
+              </p>
+              <p className="text-[16px] font-normal leading-[1.3] text-[#999]">
+                Auto Earning
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Row 2 right: Feature 2 */}
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
-            className="flex flex-wrap items-center justify-center lg:justify-start gap-8 lg:gap-[35px]"
+            className="flex flex-col gap-2 max-w-[400px] pt-8"
           >
-            <div className="flex items-center gap-4 lg:gap-5">
-              <span className="relative flex h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4">
-                <span className="animate-ping absolute inset-0 rounded-full bg-xforge-green opacity-75" />
-                <span
-                  className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4 bg-xforge-green"
-                  style={{ boxShadow: "0 0 8px 3px rgba(44,181,117,0.6), 0 0 20px 6px rgba(44,181,117,0.3)" }}
-                />
-              </span>
-              <span
-                className="text-xforge-green text-[14px] sm:text-[16px] lg:text-[24px] leading-[1.1]"
-                style={{ textShadow: "0 0 10px rgba(44,181,117,0.5), 0 0 24px rgba(44,181,117,0.25)" }}
-              >
-                Node is Running
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <p
-                className="text-[20px] sm:text-[22px] lg:text-[32px] font-medium leading-[1.1] text-xforge-gold"
-                style={{
-                  textShadow:
-                    "0 0 20px rgba(255,188,14,0.4), 0 0 40px rgba(255,188,14,0.2)",
+            <h3 className="text-[28px] font-medium leading-[1.1] text-white">
+              A quiet revolution in your pocket
+            </h3>
+            <p className="text-[16px] font-normal leading-[1.3] text-[#999]">
+              {`When you use XForge, you are doing more than connecting with friends. You're helping to build a stronger, more resilient internet. It's a profound shift in how everyday technology works.`}
+            </p>
+          </motion.div>
+
+          {/* Row 3 left: Feature 3 */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeInUp}
+            className="flex flex-col gap-2 max-w-[400px]"
+          >
+            <h3 className="text-[28px] font-medium leading-[1.1] text-white">
+              Capture the magic
+            </h3>
+            <p className="text-[16px] font-normal leading-[1.3] text-[#999]">
+              {`Life moves fast. Your camera should keep up. We designed the AI camera system on XForge to instantly understand what you're shooting and make it look spectacular.`}
+            </p>
+          </motion.div>
+
+          {/* Row 3 right: Plant hologram placeholder */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={scaleIn}
+            className="flex justify-end items-end"
+          >
+            <div className="w-[240px] h-[230px] rounded-[16px] overflow-hidden bg-gradient-to-br from-[#0a1628] to-[#0d2847] border border-[#1a3a5c] flex items-center justify-center">
+              <Image
+                src="/placeholders/hologram-placeholder.png"
+                alt="AI camera magic"
+                width={240}
+                height={230}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.style.display = "none";
+                  target.parentElement!.innerHTML =
+                    '<span class="text-[#666] text-sm text-center px-4">Hologram placeholder</span>';
                 }}
+              />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* ── Mobile layout ────────────────────────────────── */}
+        <div className="flex flex-col gap-10 lg:hidden">
+          {/* Feature 1 */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeInUp}
+            className="flex flex-col gap-2 text-center"
+          >
+            <h3 className="text-[22px] sm:text-[26px] font-medium leading-[1.1] text-white">
+              <span className="font-serif italic text-[#ffbc0e]">Intelligence</span>
+              {" "}with a purpose
+            </h3>
+            <p className="text-[14px] sm:text-[15px] font-normal leading-[1.3] text-[#999]">
+              {`We built an exclusive hub that pairs a brilliant AI assistant with your daily rewards. It's a powerful tool that makes your life easier while you help power a better internet.`}
+            </p>
+          </motion.div>
+
+          {/* Phone mockup + rewards + 24/7 */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={scaleIn}
+            className="relative w-full sm:w-[400px] mx-auto"
+          >
+            <div className="relative w-full h-[300px] sm:h-[340px] rounded-[16px] overflow-hidden bg-[#050505]">
+              <div
+                className="absolute"
+                style={{
+                  left: "50%",
+                  top: "8px",
+                  transform: "translateX(-50%)",
+                }}
+              >
+                <div style={{ transform: "rotate(11.52deg)", transformOrigin: "top center" }}>
+                  <Image
+                    src="/placeholders/xforge-widget.png"
+                    alt="XForge phone showing network rewards"
+                    width={475}
+                    height={735}
+                    className="max-w-none"
+                    style={{ width: 420, height: "auto" }}
+                  />
+                </div>
+              </div>
+              <MobileRewardCards rewardCount={rewardCount} />
+            </div>
+
+            {/* 24/7 stat — at edge of phone */}
+            <div className="flex items-center justify-center gap-2 mt-3">
+              <p
+                className="text-[24px] sm:text-[28px] font-medium leading-[1.1] text-[#ffbc0e]"
+                style={{ textShadow: "0px 1px 20.2px #ffee53" }}
               >
                 24/7
               </p>
-              <p className="text-[14px] sm:text-sm lg:text-base font-normal leading-[1.3] text-xforge-gray">
+              <p className="text-[14px] sm:text-[15px] font-normal leading-[1.3] text-[#999]">
                 Auto Earning
               </p>
             </div>
+          </motion.div>
+
+          {/* Feature 2 */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeInUp}
+            className="flex flex-col gap-2 text-center"
+          >
+            <h3 className="text-[22px] sm:text-[26px] font-medium leading-[1.1] text-white">
+              A quiet revolution in your pocket
+            </h3>
+            <p className="text-[14px] sm:text-[15px] font-normal leading-[1.3] text-[#999]">
+              {`When you use XForge, you are doing more than connecting with friends. You're helping to build a stronger, more resilient internet. It's a profound shift in how everyday technology works.`}
+            </p>
+          </motion.div>
+
+          {/* Feature 3 */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeInUp}
+            className="flex flex-col gap-2 text-center"
+          >
+            <h3 className="text-[22px] sm:text-[26px] font-medium leading-[1.1] text-white">
+              Capture the magic
+            </h3>
+            <p className="text-[14px] sm:text-[15px] font-normal leading-[1.3] text-[#999]">
+              {`Life moves fast. Your camera should keep up. We designed the AI camera system on XForge to instantly understand what you're shooting and make it look spectacular.`}
+            </p>
           </motion.div>
         </div>
       </div>

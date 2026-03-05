@@ -6,5 +6,11 @@
   {
     "email": "trest@ff.com",
     "subscribedAt": "2026-03-02T10:46:23.024Z"
+  },
+  {
+    "email": "res@gmail.com",
+    "subscribedAt": "2026-03-05T01:54:05.842Z",
+    "source": "hero",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
   }
 ]

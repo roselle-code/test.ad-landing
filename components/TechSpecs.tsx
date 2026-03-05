@@ -143,10 +143,9 @@ export default function TechSpecs() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          className="text-[20px] sm:text-[32px] lg:text-[44px] font-semibold leading-[1.1] text-white text-center mb-8 sm:mb-8 lg:mb-10"
+          className="text-[20px] sm:text-[28px] lg:text-[32px] font-semibold leading-[1.1] text-white text-center mb-8 sm:mb-8 lg:mb-10"
         >
-          <span>Full </span>
-          <span className="font-serif italic text-xforge-gold">Tech Specs</span>
+          This is the next generation of mobile technology
         </motion.h2>
 
         {/* Specs Grid */}

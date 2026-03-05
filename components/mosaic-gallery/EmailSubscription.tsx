@@ -1,4 +1,4 @@
-// Email subscription form used inside HowItWorks (desktop + mobile).
+// Email subscription form used inside MosaicGallery.
 // Shares same styling (S.btnGold, S.emailWrap) and logic pattern as Hero and Footer forms.
 // Submits to /api/subscribe with source "how_it_works", redirects to /reserve on success.
 

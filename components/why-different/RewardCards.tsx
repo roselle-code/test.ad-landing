@@ -41,11 +41,11 @@ const rewardElevate = {
 
 function StaticCard() {
   return (
-    <div className="flex items-start justify-between mb-3 lg:mb-3">
-      <span className="text-[#686c81] text-[11px] lg:text-[17px]">Network Rewards</span>
-      <div className="flex items-center gap-2 lg:gap-3">
-        <span className="inline-flex rounded-full h-[7px] w-[7px] lg:h-[11px] lg:w-[11px] bg-xforge-green" />
-        <span className="text-xforge-green text-[11px] lg:text-[17px]">Node is Running</span>
+    <div className="flex items-center justify-between mb-[7px] lg:mb-2">
+      <span className="text-[#686c81] text-[11px] lg:text-[12px]">Network Rewards</span>
+      <div className="flex items-center gap-2">
+        <span className="inline-flex rounded-full h-[6px] w-[6px] lg:h-[7px] lg:w-[7px] bg-xforge-green" />
+        <span className="text-xforge-green text-[11px] lg:text-[12px]">Node is Running</span>
       </div>
     </div>
   );
@@ -53,7 +53,7 @@ function StaticCard() {
 
 function StaticValue() {
   return (
-    <span className="font-display font-bold text-xforge-gold text-[29px] lg:text-[43px] leading-[1.1]">
+    <span className="font-display font-bold text-xforge-gold text-[29px] lg:text-[36px] leading-[1.1]">
       6,367,200
     </span>
   );
@@ -64,18 +64,18 @@ export function DesktopRewardCards({ rewardCount }: { rewardCount: number }) {
     <>
       {/* Back card */}
       <div
-        className="hidden lg:block absolute z-10 w-[326px]"
+        className="hidden lg:block absolute z-10 w-[270px]"
         style={{
-          left: "calc(54% - 163px)",
-          top: "calc(50% - 55px)",
+          left: "calc(54% - 135px)",
+          top: "calc(38% - 45px)",
           transform: cardTransform,
           filter: "blur(1.86px)",
         }}
       >
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={backCardReveal}>
-          <div className="bg-xforge-card-bg/90 backdrop-blur-sm border border-[#bdbdbd]/40 rounded-[14px] p-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
+          <div className="bg-xforge-card-bg/90 backdrop-blur-sm border border-[#bdbdbd]/40 rounded-[12px] p-3 shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
             <StaticCard />
-            <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-xl p-3 flex items-center justify-center">
+            <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-lg p-2.5 flex items-center justify-center">
               <StaticValue />
             </div>
           </div>
@@ -84,18 +84,18 @@ export function DesktopRewardCards({ rewardCount }: { rewardCount: number }) {
 
       {/* Mid card */}
       <div
-        className="hidden lg:block absolute z-20 w-[326px]"
+        className="hidden lg:block absolute z-20 w-[270px]"
         style={{
-          left: "calc(58% - 163px)",
-          top: "calc(47% - 55px)",
+          left: "calc(58% - 135px)",
+          top: "calc(34% - 45px)",
           transform: cardTransform,
           filter: "blur(0.93px)",
         }}
       >
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={midCardReveal}>
-          <div className="bg-xforge-card-bg/90 backdrop-blur-sm border border-[#bdbdbd]/40 rounded-[14px] p-4 shadow-[0_16px_50px_rgba(0,0,0,0.5)]">
+          <div className="bg-xforge-card-bg/90 backdrop-blur-sm border border-[#bdbdbd]/40 rounded-[12px] p-3 shadow-[0_16px_50px_rgba(0,0,0,0.5)]">
             <StaticCard />
-            <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-xl p-3 flex items-center justify-center">
+            <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-lg p-2.5 flex items-center justify-center">
               <StaticValue />
             </div>
           </div>
@@ -104,20 +104,27 @@ export function DesktopRewardCards({ rewardCount }: { rewardCount: number }) {
 
       {/* Front card (live counter) */}
       <div
-        className="hidden lg:block absolute z-30 w-[326px]"
+        className="hidden lg:block absolute z-30 w-[270px]"
         style={{
-          left: "calc(61% - 163px)",
-          top: "calc(43% - 55px)",
+          left: "calc(61% - 135px)",
+          top: "calc(30% - 45px)",
           transform: cardTransform,
         }}
       >
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={rewardElevate}>
-          <div className="bg-xforge-card-bg3 backdrop-blur-md border border-[#bdbdbd]/40 rounded-[14px] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-            <div className="flex items-start mb-3">
-              <span className="text-[#aeb2c7] text-[17px]">Network Rewards</span>
+          <div className="bg-xforge-card-bg3 backdrop-blur-md border border-[#bdbdbd]/40 rounded-[12px] p-3 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[#aeb2c7] text-[12px]">Network Rewards</span>
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-[7px] w-[7px]">
+                  <span className="animate-ping absolute inset-0 rounded-full bg-xforge-green opacity-75" />
+                  <span className="relative inline-flex rounded-full h-[7px] w-[7px] bg-xforge-green" style={{ boxShadow: "0 0 6px 2px rgba(44,181,117,0.6)" }} />
+                </span>
+                <span className="text-xforge-green text-[12px]">Node is Running</span>
+              </div>
             </div>
-            <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-xl p-3 flex items-center justify-center">
-              <span className="font-display font-bold text-xforge-gold text-[43px] leading-[1.1] tabular-nums">
+            <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-lg p-2.5 flex items-center justify-center">
+              <span className="font-display font-bold text-xforge-gold text-[36px] leading-[1.1] tabular-nums">
                 {rewardCount.toLocaleString()}
               </span>
             </div>
@@ -136,7 +143,7 @@ export function MobileRewardCards({ rewardCount }: { rewardCount: number }) {
         className="block lg:hidden absolute z-10 w-[220px]"
         style={{
           left: "calc(50% - 93px)",
-          top: "calc(50% - 91px)",
+          top: "calc(36% - 55px)",
           transform: cardTransform,
           filter: "blur(1.25px)",
         }}
@@ -156,7 +163,7 @@ export function MobileRewardCards({ rewardCount }: { rewardCount: number }) {
         className="block lg:hidden absolute z-20 w-[220px]"
         style={{
           left: "calc(50% - 82px)",
-          top: "calc(50% - 103px)",
+          top: "calc(32% - 55px)",
           transform: cardTransform,
           filter: "blur(0.63px)",
         }}
@@ -176,14 +183,21 @@ export function MobileRewardCards({ rewardCount }: { rewardCount: number }) {
         className="block lg:hidden absolute z-30 w-[220px]"
         style={{
           left: "calc(50% - 71px)",
-          top: "calc(50% - 117px)",
+          top: "calc(28% - 55px)",
           transform: cardTransform,
         }}
       >
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={rewardElevate}>
           <div className="bg-xforge-card-bg3 backdrop-blur-md border border-[#bdbdbd]/40 rounded-[9px] p-[11px] shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-            <div className="flex items-start mb-[7px]">
+            <div className="flex items-center justify-between mb-[7px]">
               <span className="text-[#aeb2c7] text-[11px]">Network Rewards</span>
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-[6px] w-[6px]">
+                  <span className="animate-ping absolute inset-0 rounded-full bg-xforge-green opacity-75" />
+                  <span className="relative inline-flex rounded-full h-[6px] w-[6px] bg-xforge-green" style={{ boxShadow: "0 0 4px 2px rgba(44,181,117,0.6)" }} />
+                </span>
+                <span className="text-xforge-green text-[11px]">Node is Running</span>
+              </div>
             </div>
             <div className="bg-xforge-card-bg2 border border-[#bdbdbd]/40 rounded-[8px] p-[7px] h-[53px] flex items-center justify-center">
               <span className="font-display font-bold text-xforge-gold text-[29px] leading-[1.1] tabular-nums">

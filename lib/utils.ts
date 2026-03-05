@@ -1,4 +1,4 @@
-// Shared across Hero, Footer, HowItWorks email forms — keep in sync
+// Shared across Hero, Footer, MosaicGallery email forms — keep in sync
 export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }

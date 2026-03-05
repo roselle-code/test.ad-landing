@@ -1,6 +1,6 @@
 // Email subscription API. Saves to local JSON (ephemeral on Vercel) and syncs to Mailchimp.
 // Requires: MAILCHIMP_API_KEY, MAILCHIMP_LIST_ID in .env.local
-// Called by: Hero.tsx, EmailSubscription.tsx (HowItWorks), Footer.tsx
+// Called by: Hero.tsx, EmailSubscription.tsx (MosaicGallery), Footer.tsx
 // Rate limited by IP (in-memory). See lib/rate-limit.ts for limits.
 
 import { NextRequest, NextResponse } from "next/server";

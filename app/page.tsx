@@ -1,6 +1,6 @@
 import Hero from "@/components/Hero";
 import Partners from "@/components/Partners";
-import HowItWorks from "@/components/HowItWorks";
+import MosaicGallery from "@/components/MosaicGallery";
 import WhyDifferent from "@/components/WhyDifferent";
 import TechSpecs from "@/components/TechSpecs";
 import WhyReserve from "@/components/WhyReserve";
@@ -36,7 +36,7 @@ export default function Home() {
       <main>
         <Hero />
         <Partners />
-        <HowItWorks />
+        <MosaicGallery />
         <WhyDifferent />
         <TechSpecs />
         <WhyReserve />

@@ -8,7 +8,7 @@
 ```
 Visit → Hero (video + email CTA)
      → Partners (social proof)
-     → HowItWorks (product education + email CTA)
+     → MosaicGallery (product education + email CTA)
      → WhyDifferent (passive earning value prop)
      → TechSpecs (hardware specs)
      → WhyReserve (pricing + savings)
@@ -107,7 +107,7 @@ npm run lint
 ├── components/             # React components (one per section)
 │   ├── Hero.tsx            # Hero video + email CTA
 │   ├── Partners.tsx        # Partner logo marquee
-│   ├── HowItWorks.tsx      # Circular gallery + features
+│   ├── MosaicGallery.tsx    # Mosaic photo gallery + email CTA
 │   ├── WhyDifferent.tsx    # Passive earning value prop
 │   ├── TechSpecs.tsx       # Hardware specs grid
 │   ├── WhyReserve.tsx      # Pricing comparison
@@ -140,12 +140,12 @@ Where to update key values:
 | **Reserve page meta** | `app/reserve/layout.tsx` | `metadata` export |
 | **OG image** | `app/layout.tsx` | `metadata.openGraph.images` |
 | **Canonical URL** | `app/layout.tsx` + `app/reserve/layout.tsx` | `metadata.alternates.canonical` |
-| **CTA button text** | `components/Hero.tsx`, `components/Footer.tsx`, `components/HowItWorks.tsx` | Search for "Get 40% Discount" |
+| **CTA button text** | `components/Hero.tsx`, `components/Footer.tsx`, `components/MosaicGallery.tsx` | Search for "Get 40% Discount" |
 | **Reserve button text** | `app/reserve/page.tsx` | Search for "Reserve Discount for $3" |
 | **Pricing ($299/$499)** | `app/reserve/page.tsx` + `components/WhyReserve.tsx` | Search for "$299" and "$499" |
 | **JSON-LD structured data** | `app/page.tsx` | `jsonLd` object |
 | **Partner logos** | `components/Partners.tsx` | `PARTNERS` array |
-| **Feature descriptions** | `components/HowItWorks.tsx` | `FEATURES` array |
+| **Feature descriptions** | `components/WhyDifferent.tsx` | Inline in component |
 | **Tech spec items** | `components/TechSpecs.tsx` | `SPECS` array |
 | **FAQ items** | `app/reserve/page.tsx` | `FAQ_ITEMS` array |
 | **Notification bar text** | `components/Hero.tsx` | Search for "Launching soon" |
@@ -160,7 +160,7 @@ Where to update key values:
 ## 5. Mailchimp / Email Integration
 
 **How it works:**
-1. User enters email in Hero, HowItWorks, or Footer
+1. User enters email in Hero, MosaicGallery, or Footer
 2. Frontend POSTs `{ email, source }` to `/api/subscribe`
 3. API saves to `data/subscribers.json` (local backup)
 4. API attempts Mailchimp sync (non-blocking — failures don't break the flow)
@@ -191,7 +191,7 @@ Where to update key values:
 |----------|-------|
 | File | `app/api/subscribe/route.ts` |
 | Purpose | Subscribe email address |
-| Called by | `Hero.tsx`, `HowItWorks.tsx` (EmailSubscription), `Footer.tsx` |
+| Called by | `Hero.tsx`, `MosaicGallery.tsx` (EmailSubscription), `Footer.tsx` |
 | Env vars | `MAILCHIMP_API_KEY`, `MAILCHIMP_LIST_ID` |
 | Side effects | Writes to `data/subscribers.json`, calls Mailchimp API |
 | Validation | Content-Type check, email regex, source allowlist |
@@ -234,7 +234,7 @@ Partners.tsx
 ├── Used by: app/page.tsx
 └── ⚠ Change impact: Logo marquee, auto-scroll behavior
 
-HowItWorks.tsx
+MosaicGallery.tsx
 ├── Depends on: gsap, ScrollTrigger, lib/animations, lib/analytics, lib/utils
 ├── Used by: app/page.tsx
 └── ⚠ Change impact: Circular photo carousel, scroll-pinned animation, email form
@@ -260,15 +260,15 @@ Footer.tsx
 └── ⚠ Change impact: Email form, footer links, pattern background
 
 lib/animations.ts
-├── Used by: Hero, Footer, HowItWorks, WhyDifferent, TechSpecs, WhyReserve, reserve/page
+├── Used by: Hero, Footer, MosaicGallery, WhyDifferent, TechSpecs, WhyReserve, reserve/page
 └── ⚠ Change impact: ALL section animations and button styles
 
 lib/utils.ts
-├── Used by: Hero, Footer, HowItWorks, reserve/page
+├── Used by: Hero, Footer, MosaicGallery, reserve/page
 └── ⚠ Change impact: Email validation, Kickstarter URL across all forms
 
 lib/analytics.ts
-├── Used by: Hero, Footer, HowItWorks, reserve/page, GoogleAnalytics
+├── Used by: Hero, Footer, MosaicGallery, reserve/page, GoogleAnalytics
 └── ⚠ Change impact: All conversion tracking
 ```
 
@@ -281,7 +281,7 @@ lib/analytics.ts
 | `app/layout.tsx` | **Critical** | SEO metadata, fonts, GA4 script. Breaking this breaks every page. |
 | `app/globals.css` | **Critical** | Tailwind theme tokens, keyframes, reduced-motion. All styling depends on this. |
 | `lib/animations.ts` | **High** | Shared button styles (`S.btnGold`, `S.emailWrap`, etc.) used by 7 components. Changing class strings breaks all CTAs. |
-| `components/HowItWorks.tsx` | **High** | GSAP ScrollTrigger with pinning. Fragile on mobile Safari. Carousel math is position-sensitive. |
+| `components/MosaicGallery.tsx` | **Low** | Static mosaic grid with Framer Motion parallax and hover effects. No complex scroll logic. |
 | `components/WhyDifferent.tsx` | **High** | GSAP scroll animations + animated counter. Mobile/desktop split logic. |
 | `app/api/subscribe/route.ts` | **High** | Email capture pipeline. Breaking this loses leads. |
 | `next.config.ts` | **Medium** | Security headers. Misconfiguration can block resources. |
@@ -400,8 +400,8 @@ lib/analytics.ts
 - [ ] Hero video plays (Chrome, Safari, mobile)
 - [ ] Email form submits and redirects to /reserve
 - [ ] Partner marquee scrolls and pauses on hover
-- [ ] HowItWorks carousel rotates on scroll (desktop)
-- [ ] HowItWorks carousel pins correctly (desktop)
+- [ ] MosaicGallery photos render in mosaic grid (desktop)
+- [ ] MosaicGallery parallax scrolling works smoothly
 - [ ] Mobile carousel does not break scroll
 - [ ] WhyDifferent reward counter animates
 - [ ] All CTAs clickable and styled
@@ -437,7 +437,7 @@ lib/analytics.ts
 - [ ] No overlapping sections
 - [ ] Hero title + email fit in one viewport
 - [ ] Partner marquee doesn't break or overflow
-- [ ] HowItWorks carousel doesn't lock scrolling on mobile
+- [ ] MosaicGallery responsive 2-col grid on mobile
 - [ ] Reserve form is fully visible and scrollable
 - [ ] FAQ dropdowns open/close without clipping
 - [ ] Buttons are at least 44px tall (thumb-friendly)
@@ -458,8 +458,7 @@ lib/analytics.ts
 | **Env variable prefix** | Only `NEXT_PUBLIC_*` variables are available in client code. Server-only vars (Mailchimp, Admin key) must NOT have this prefix. |
 | **Safari viewport height** | `100vh` doesn't account for Safari's address bar. Always use `100dvh` for full-viewport sections. |
 | **Subscriber JSON file** | `data/subscribers.json` is written by the API at runtime. On Vercel (serverless), this file is ephemeral — it resets on each deployment. Use Mailchimp as the persistent store. |
-| **Carousel photo order** | `PHOTOS` array order in HowItWorks matches the Figma circular path layout. Reordering changes the visual arrangement. |
-| **INITIAL_ROTATION** | Controls which carousel photo is centered on load. Calculated based on photo index and `ANGLE_STEP`. Changing the `PHOTOS` array requires recalculating. |
+| **Mosaic photo order** | Photos in `MosaicGallery.tsx` are arranged in a CSS Grid mosaic layout matching Figma. Grid positions are set via `gridTemplateColumns` and `gridTemplateRows`. |
 
 ---
 

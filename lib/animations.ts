@@ -1,5 +1,5 @@
 // Shared animation variants and Tailwind class strings used across ALL sections.
-// Changing S.btnGold or S.emailWrap affects Hero, HowItWorks, Footer, and /reserve.
+// Changing S.btnGold or S.emailWrap affects Hero, MosaicGallery, Footer, and /reserve.
 import type { Variants } from "framer-motion";
 
 export const fadeInUp: Variants = {
