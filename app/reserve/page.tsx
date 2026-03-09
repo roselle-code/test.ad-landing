@@ -160,6 +160,8 @@ function GuaranteeCards() {
 }
 
 function ReserveForm() {
+  const [reserving, setReserving] = useState(false);
+
   return (
     <div className="flex flex-col gap-[16px] items-center lg:sticky lg:top-[60px]">
       <div className="w-full bg-white border border-xforge-border rounded-[16px] px-[16px] py-[20px] shadow-[0px_0px_0px_1px_#fafafa,0px_1px_2px_0px_rgba(0,0,0,0.3)] flex flex-col gap-[24px] overflow-hidden">
@@ -214,18 +216,29 @@ function ReserveForm() {
         <div className="flex flex-col gap-[12px]">
           <motion.a
             href="/api/checkout"
-            onClick={() => trackReserveClick()}
-            whileHover="wiggle"
-            whileTap={{ scale: 0.97, boxShadow: "0px 0px 20px 4px rgba(255,188,14,0.5), 0px 0px 0px 1px #fbc946, 0px 1px 2px 0px rgba(0,0,0,0.3)" }}
-            className={`${S.btnGold} flex items-center justify-center h-[44px] w-full rounded-[12px] text-[14px] sm:text-[16px] font-medium hover:scale-[1.04]`}
+            onClick={() => { setReserving(true); trackReserveClick(); }}
+            whileHover={reserving ? undefined : "wiggle"}
+            whileTap={reserving ? undefined : { scale: 0.97, boxShadow: "0px 0px 20px 4px rgba(255,188,14,0.5), 0px 0px 0px 1px #fbc946, 0px 1px 2px 0px rgba(0,0,0,0.3)" }}
+            className={`${S.btnGold} flex items-center justify-center gap-2 h-[44px] w-full rounded-[12px] text-[14px] sm:text-[16px] font-medium transition-opacity ${reserving ? "opacity-70 pointer-events-none" : "hover:scale-[1.04]"}`}
+            aria-disabled={reserving}
           >
-            <motion.span
-              variants={{ wiggle: { rotate: [0, -3, 3, -2, 1.5, 0] } }}
-              transition={{ duration: 0.5 }}
-              style={{ display: "inline-block", transformOrigin: "center bottom" }}
-            >
-              Reserve Discount for $3
-            </motion.span>
+            {reserving ? (
+              <>
+                <svg className="animate-spin h-4 w-4 text-[#050505]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <span>Redirecting…</span>
+              </>
+            ) : (
+              <motion.span
+                variants={{ wiggle: { rotate: [0, -3, 3, -2, 1.5, 0] } }}
+                transition={{ duration: 0.5 }}
+                style={{ display: "inline-block", transformOrigin: "center bottom" }}
+              >
+                Reserve Discount for $3
+              </motion.span>
+            )}
           </motion.a>
 
           <motion.a

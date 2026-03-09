@@ -193,36 +193,49 @@ export default function Hero() {
                 <motion.button
                   type="button"
                   onClick={handleSubmit}
-                  whileHover="wiggle"
-                    whileTap={{ scale: 0.97, boxShadow: "0px 0px 20px 4px rgba(255,188,14,0.5), 0px 0px 0px 1px #fbc946, 0px 1px 2px 0px rgba(0,0,0,0.3)" }}
-                  className={`${S.btnGold} flex-shrink-0 flex items-center gap-1.5 sm:gap-2 rounded-[10px] sm:rounded-[12px] px-3 sm:px-4 h-[28px] sm:h-[32px] text-sm sm:text-base font-medium hover:scale-[1.04]`}
+                  disabled={submitting}
+                  whileHover={submitting ? undefined : "wiggle"}
+                  whileTap={submitting ? undefined : { scale: 0.97, boxShadow: "0px 0px 20px 4px rgba(255,188,14,0.5), 0px 0px 0px 1px #fbc946, 0px 1px 2px 0px rgba(0,0,0,0.3)" }}
+                  className={`${S.btnGold} flex-shrink-0 flex items-center gap-1.5 sm:gap-2 rounded-[10px] sm:rounded-[12px] px-3 sm:px-4 h-[28px] sm:h-[32px] text-sm sm:text-base font-medium transition-opacity ${submitting ? "opacity-70 cursor-not-allowed" : "hover:scale-[1.04]"}`}
                 >
-                  <motion.span
-                    variants={{
-                      wiggle: { rotate: [0, -3, 3, -2, 1.5, 0] },
-                    }}
-                    transition={{ duration: 0.5 }}
-                    style={{
-                      display: "inline-block",
-                      transformOrigin: "center bottom",
-                    }}
-                  >
-                    Get 40% Discount
-                  </motion.span>
-                  <motion.div
-                    variants={{
-                      wiggle: { rotate: [0, -14, 12, -10, 8, -4, 0] },
-                    }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <Image
-                      src="/placeholders/arrow-icon.svg"
-                      alt=""
-                      width={20}
-                      height={20}
-                      aria-hidden="true"
-                    />
-                  </motion.div>
+                  {submitting ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-[#050505]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      <span>Submitting…</span>
+                    </>
+                  ) : (
+                    <>
+                      <motion.span
+                        variants={{
+                          wiggle: { rotate: [0, -3, 3, -2, 1.5, 0] },
+                        }}
+                        transition={{ duration: 0.5 }}
+                        style={{
+                          display: "inline-block",
+                          transformOrigin: "center bottom",
+                        }}
+                      >
+                        Get 40% Discount
+                      </motion.span>
+                      <motion.div
+                        variants={{
+                          wiggle: { rotate: [0, -14, 12, -10, 8, -4, 0] },
+                        }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Image
+                          src="/placeholders/arrow-icon.svg"
+                          alt=""
+                          width={20}
+                          height={20}
+                          aria-hidden="true"
+                        />
+                      </motion.div>
+                    </>
+                  )}
                 </motion.button>
                 <div className={S.insetShadow} />
               </div>
