@@ -1,46 +1,29 @@
 // Footer with email CTA, legal links, and pattern background.
-// Dependencies: lib/animations (S.btnGold, S.emailWrap), lib/analytics, lib/utils
+// Dependencies: hooks/useEmailSubscribe, lib/animations (S.btnGold, S.emailWrap), lib/utils
 // Connected to: /api/subscribe (email form), /reserve (redirect after submit)
 // Contains hardcoded links to /terms-and-conditions and /privacy-policy.
 
 "use client";
 
-import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { S } from "@/lib/animations";
-import { trackEmailSubmit } from "@/lib/analytics";
-import { isValidEmail } from "@/lib/utils";
+import { useEmailSubscribe } from "@/hooks/useEmailSubscribe";
 
 export default function Footer() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [touched, setTouched] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const showError = touched && email.length > 0 && !isValidEmail(email);
+  const {
+    email,
+    setEmail,
+    submitting,
+    showError,
+    error,
+    inputRef,
+    handleSubmit,
+    handleBlur,
+    handleKeyDown,
+  } = useEmailSubscribe("footer");
 
-  async function handleNotify() {
-    setTouched(true);
-    if (!isValidEmail(email) || submitting) {
-      if (!isValidEmail(email)) inputRef.current?.focus();
-      return;
-    }
-    setSubmitting(true);
-    try {
-      await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source: "footer" }),
-      });
-      trackEmailSubmit("footer");
-    } catch {}
-    setEmail("");
-    setTouched(false);
-    setSubmitting(false);
-    router.push("/reserve");
-  }
   return (
     <footer className="relative w-full bg-xforge-black overflow-hidden">
       {/* Background pattern */}
@@ -98,8 +81,8 @@ export default function Footer() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  onBlur={() => setTouched(true)}
-                  onKeyDown={(e) => e.key === "Enter" && handleNotify()}
+                  onBlur={handleBlur}
+                  onKeyDown={handleKeyDown}
                   placeholder="name@domain.com"
                   aria-label="Email address"
                   aria-invalid={showError}
@@ -108,7 +91,7 @@ export default function Footer() {
               </div>
               <motion.button
                 type="button"
-                onClick={handleNotify}
+                onClick={handleSubmit}
                 disabled={submitting}
                 whileHover={submitting ? undefined : "wiggle"}
                 whileTap={submitting ? undefined : { scale: 0.97, boxShadow: "0px 0px 20px 4px rgba(255,188,14,0.5), 0px 0px 0px 1px #fbc946, 0px 1px 2px 0px rgba(0,0,0,0.3)" }}
@@ -148,6 +131,11 @@ export default function Footer() {
               </motion.button>
               <div className={S.insetShadow} />
             </div>
+
+            {/* Error feedback */}
+            {error && (
+              <p className="text-red-400 text-xs">{error}</p>
+            )}
 
             {/* Early bird text */}
             <p className="text-[14px] sm:text-sm font-normal leading-[1.1] text-center">

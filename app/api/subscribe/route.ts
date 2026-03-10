@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { upsertContact } from "@/lib/mailchimp";
+import { upsertContact, ensureMergeFieldsOnce } from "@/lib/mailchimp";
 
 interface Subscriber {
   email: string;
@@ -75,25 +75,28 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Bootstrap Mailchimp merge fields once (cached in KV)
+    await ensureMergeFieldsOnce(kv);
+
     // Mailchimp is the primary persistent store.
     // Uses PUT (upsert) — safe to call for existing contacts.
-    let mailchimpResult: Record<string, unknown> | Awaited<ReturnType<typeof upsertContact>> = {};
     try {
-      mailchimpResult = await upsertContact({
+      await upsertContact({
         email: normalizedEmail,
         mergeFields: {
           SOURCE: validatedSource,
+          ORIGIN: "self-hosted",
         },
         tags: ["xforge-landing"],
       });
     } catch {
-      mailchimpResult = { error: "mailchimp_unavailable" };
+      // Non-fatal — KV backup already has the email
+      console.warn("[subscribe] Mailchimp upsert failed for", normalizedEmail);
     }
 
     return NextResponse.json({
       success: true,
       isNew,
-      mailchimp: mailchimpResult,
     });
   } catch {
     return NextResponse.json(

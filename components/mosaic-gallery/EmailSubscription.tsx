@@ -1,45 +1,26 @@
 // Email subscription form used inside MosaicGallery.
-// Shares same styling (S.btnGold, S.emailWrap) and logic pattern as Hero and Footer forms.
+// Shares same styling (S.btnGold, S.emailWrap) via useEmailSubscribe hook.
 // Submits to /api/subscribe with source "how_it_works", redirects to /reserve on success.
 
 "use client";
 
-import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { S } from "@/lib/animations";
-import { trackEmailSubmit } from "@/lib/analytics";
-import { isValidEmail } from "@/lib/utils";
+import { useEmailSubscribe } from "@/hooks/useEmailSubscribe";
 
 export default function EmailSubscription() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [touched, setTouched] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const showError = touched && email.length > 0 && !isValidEmail(email);
-
-  async function handleNotify() {
-    setTouched(true);
-    if (!isValidEmail(email) || submitting) {
-      if (!isValidEmail(email)) inputRef.current?.focus();
-      return;
-    }
-    setSubmitting(true);
-    try {
-      await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source: "how_it_works" }),
-      });
-      trackEmailSubmit("how_it_works");
-    } catch {}
-    setEmail("");
-    setTouched(false);
-    setSubmitting(false);
-    router.push("/reserve");
-  }
+  const {
+    email,
+    setEmail,
+    submitting,
+    showError,
+    error,
+    inputRef,
+    handleSubmit,
+    handleBlur,
+    handleKeyDown,
+  } = useEmailSubscribe("how_it_works");
 
   return (
     <div className="w-full max-w-[360px] sm:max-w-[500px]">
@@ -54,8 +35,8 @@ export default function EmailSubscription() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            onBlur={() => setTouched(true)}
-            onKeyDown={(e) => e.key === "Enter" && handleNotify()}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
             placeholder="name@domain.com"
             aria-label="Email address"
             aria-invalid={showError}
@@ -64,7 +45,7 @@ export default function EmailSubscription() {
         </div>
         <motion.button
           type="button"
-          onClick={handleNotify}
+          onClick={handleSubmit}
           disabled={submitting}
           whileHover={submitting ? undefined : "wiggle"}
           whileTap={submitting ? undefined : { scale: 0.97, boxShadow: "0px 0px 20px 4px rgba(255,188,14,0.5), 0px 0px 0px 1px #fbc946, 0px 1px 2px 0px rgba(0,0,0,0.3)" }}
@@ -104,6 +85,9 @@ export default function EmailSubscription() {
         </motion.button>
         <div className={S.insetShadow} />
       </div>
+      {error && (
+        <p className="text-red-500 text-xs mt-2 text-center">{error}</p>
+      )}
       <p className="text-[14px] sm:text-sm font-normal leading-[1.1] text-[#707070] text-center mt-3 sm:mt-4">
         Reserve now and save <span className="font-bold">$200</span>
       </p>

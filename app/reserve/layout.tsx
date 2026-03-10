@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Reserve for $3 — 40% Off XForge Phone",
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
     title: "Reserve Your XForge Phone — 40% Off",
     description:
       "Lock in the lowest price ever with a $3 refundable deposit. Cancel anytime, no questions asked.",
-    url: "https://pre-xforge-ks-landing-nh4h.vercel.app/reserve",
+    url: `${SITE_URL}/reserve`,
     images: [
       {
         url: "/placeholders/reserve-product.webp",
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
     images: ["/placeholders/reserve-product.webp"],
   },
   alternates: {
-    canonical: "https://pre-xforge-ks-landing-nh4h.vercel.app/reserve",
+    canonical: `${SITE_URL}/reserve`,
   },
 };
 
@@ -36,3 +37,4 @@ export default function ReserveLayout({
 }) {
   return children;
 }
+

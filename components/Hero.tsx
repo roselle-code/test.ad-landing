@@ -1,5 +1,5 @@
 // Hero section: full-viewport video background + email capture CTA.
-// Dependencies: lib/animations (S.btnGold, S.emailWrap), lib/analytics, lib/utils
+// Dependencies: hooks/useEmailSubscribe, lib/animations (S.btnGold, S.emailWrap), lib/utils
 // Connected to: /api/subscribe (email form), /reserve (redirect after submit)
 //
 // Browser-sensitive: video uses WebM (Safari 16+ required), IntersectionObserver
@@ -9,24 +9,27 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { S } from "@/lib/animations";
-import { trackEmailSubmit } from "@/lib/analytics";
-import { isValidEmail } from "@/lib/utils";
+import { useEmailSubscribe } from "@/hooks/useEmailSubscribe";
 
 export default function Hero() {
-  const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
-  const [email, setEmail] = useState("");
-  const [touched, setTouched] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const showError = touched && email.length > 0 && !isValidEmail(email);
+  const {
+    email,
+    setEmail,
+    submitting,
+    showError,
+    error,
+    inputRef,
+    handleSubmit,
+    handleBlur,
+    handleKeyDown,
+  } = useEmailSubscribe("hero");
 
   const pickSource = useCallback(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -75,40 +78,20 @@ export default function Hero() {
     return () => mq.removeEventListener("change", handler);
   }, [pickSource]);
 
-  async function handleSubmit() {
-    setTouched(true);
-    if (!isValidEmail(email) || submitting) {
-      if (!isValidEmail(email)) inputRef.current?.focus();
-      return;
-    }
-    setSubmitting(true);
-    try {
-      await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source: "hero" }),
-      });
-      trackEmailSubmit("hero");
-    } catch {}
-    setEmail("");
-    setTouched(false);
-    setSubmitting(false);
-    router.push("/reserve");
-  }
-
   return (
     <section
       id="hero"
       ref={sectionRef}
       className="relative w-full h-[100dvh] bg-black overflow-hidden"
     >
-      {/* Background Video — spans full viewport */}
+      {/* Background Video — spans full viewport, poster shown until video loads */}
       <video
         ref={videoRef}
         muted
         loop
         playsInline
         preload="none"
+        poster="/placeholders/reserve-product.webp"
         className="absolute inset-0 w-full h-full object-contain"
         aria-hidden="true"
       >
@@ -183,8 +166,8 @@ export default function Hero() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  onBlur={() => setTouched(true)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                  onBlur={handleBlur}
+                  onKeyDown={handleKeyDown}
                   placeholder="name@domain.com"
                   aria-label="Email address"
                   aria-invalid={showError}
@@ -240,6 +223,9 @@ export default function Hero() {
                 <div className={S.insetShadow} />
               </div>
             </div>
+            {error && (
+              <p className="text-red-400 text-xs mt-1 text-center">{error}</p>
+            )}
           </motion.div>
         </div>
       </div>

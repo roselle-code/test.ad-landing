@@ -1,10 +1,18 @@
 // Admin-only endpoint to list subscribers from KV.
-// Protected by Bearer token.
+// Protected by Bearer token with constant-time comparison.
 // Requires: ADMIN_API_KEY in env
 // Usage: curl -H "Authorization: Bearer <key>" /api/subscribe/list
 
 import { NextRequest, NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+// Node.js crypto — requires "nodejs_compat" flag in wrangler.jsonc
+import { timingSafeEqual } from "crypto";
+
+/** Constant-time string comparison to prevent timing side-channel attacks. */
+function safeTokenCompare(provided: string, expected: string): boolean {
+  if (provided.length !== expected.length) return false;
+  return timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
+}
 
 export async function GET(req: NextRequest) {
   const adminKey = process.env.ADMIN_API_KEY;
@@ -21,7 +29,7 @@ export async function GET(req: NextRequest) {
     ? authHeader.slice(7).trim()
     : null;
 
-  if (!token || token !== adminKey) {
+  if (!token || !safeTokenCompare(token, adminKey)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -37,20 +45,27 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // List all keys and fetch their values
-    const keys = await kv.list();
-    const subscribers = await Promise.all(
-      keys.keys.map(async (key: { name: string }) => {
-        const value = await kv.get(key.name);
-        return value ? JSON.parse(value) : null;
-      })
-    );
+    // Paginate through all KV keys (list() returns max 1000 per call)
+    const allSubscribers: unknown[] = [];
+    let cursor: string | undefined;
 
-    const validSubscribers = subscribers.filter(Boolean);
+    do {
+      const listResult = await kv.list({ cursor, limit: 1000 });
+
+      const batch = await Promise.all(
+        listResult.keys.map(async (key: { name: string }) => {
+          const value = await kv.get(key.name);
+          return value ? JSON.parse(value) : null;
+        })
+      );
+      allSubscribers.push(...batch.filter(Boolean));
+
+      cursor = listResult.list_complete ? undefined : (listResult.cursor as string);
+    } while (cursor);
 
     return NextResponse.json({
-      total: validSubscribers.length,
-      subscribers: validSubscribers,
+      total: allSubscribers.length,
+      subscribers: allSubscribers,
     });
   } catch {
     return NextResponse.json({ total: 0, subscribers: [] });

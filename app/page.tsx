@@ -24,7 +24,6 @@ const jsonLd = {
     url: `${SITE_URL}/reserve`,
     priceValidUntil: "2027-12-31",
   },
-  aggregateRating: undefined,
 };
 
 export default function Home() {

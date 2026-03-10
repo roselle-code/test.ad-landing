@@ -162,6 +162,23 @@ function GuaranteeCards() {
 function ReserveForm() {
   const [reserving, setReserving] = useState(false);
 
+  async function handleReserve() {
+    if (reserving) return;
+    setReserving(true);
+    trackReserveClick();
+    try {
+      const res = await fetch("/api/checkout", { method: "POST" });
+      const data = (await res.json()) as { url?: string };
+      if (data.url) {
+        window.location.href = data.url;
+        return; // keep spinner until navigation completes
+      }
+    } catch {
+      // fall through to reset state
+    }
+    setReserving(false);
+  }
+
   return (
     <div className="flex flex-col gap-[16px] items-center lg:sticky lg:top-[60px]">
       <div className="w-full bg-white border border-xforge-border rounded-[16px] px-[16px] py-[20px] shadow-[0px_0px_0px_1px_#fafafa,0px_1px_2px_0px_rgba(0,0,0,0.3)] flex flex-col gap-[24px] overflow-hidden">
@@ -214,13 +231,13 @@ function ReserveForm() {
 
         {/* Reserve button + Notify + checkout info */}
         <div className="flex flex-col gap-[12px]">
-          <motion.a
-            href="/api/checkout"
-            onClick={() => { setReserving(true); trackReserveClick(); }}
+          <motion.button
+            type="button"
+            onClick={handleReserve}
+            disabled={reserving}
             whileHover={reserving ? undefined : "wiggle"}
             whileTap={reserving ? undefined : { scale: 0.97, boxShadow: "0px 0px 20px 4px rgba(255,188,14,0.5), 0px 0px 0px 1px #fbc946, 0px 1px 2px 0px rgba(0,0,0,0.3)" }}
-            className={`${S.btnGold} flex items-center justify-center gap-2 h-[44px] w-full rounded-[12px] text-[14px] sm:text-[16px] font-medium transition-opacity ${reserving ? "opacity-70 pointer-events-none" : "hover:scale-[1.04]"}`}
-            aria-disabled={reserving}
+            className={`${S.btnGold} flex items-center justify-center gap-2 h-[44px] w-full rounded-[12px] text-[14px] sm:text-[16px] font-medium transition-opacity ${reserving ? "opacity-70 cursor-not-allowed" : "hover:scale-[1.04]"}`}
           >
             {reserving ? (
               <>
@@ -239,7 +256,7 @@ function ReserveForm() {
                 Reserve Discount for $3
               </motion.span>
             )}
-          </motion.a>
+          </motion.button>
 
           <motion.a
             href={KICKSTARTER_URL}

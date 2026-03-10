@@ -4,8 +4,11 @@
 // Merge fields (custom contact properties):
 //   - RESV_AMT  (number) — reservation amount in USD
 //   - SOURCE    (text)   — signup source (hero, footer, etc.)
+//   - ORIGIN    (text)   — deployment origin (e.g. "self-hosted")
 // These must be created once in the Mailchimp audience. See ensureMergeFields().
 
+// Node.js crypto — requires the "nodejs_compat" flag in wrangler.jsonc.
+// Web Crypto (crypto.subtle) does NOT support MD5, so this is intentional.
 import { createHash } from "crypto";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -176,12 +179,23 @@ async function setTags(cfg: MailchimpConfig, email: string, tags: string[]): Pro
 
 // ─── Merge-field bootstrapping (run once) ────────────────────────────────────
 
+/** Desired merge fields — add new entries here and the KV cache auto-invalidates. */
+const DESIRED_MERGE_FIELDS = [
+  { tag: "RESV_AMT", name: "Reservation Amount", type: "number" },
+  { tag: "SOURCE", name: "Signup Source", type: "text" },
+  { tag: "ORIGIN", name: "Origin", type: "text" },
+] as const;
+
+/**
+ * KV key for caching the "merge fields have been bootstrapped" flag.
+ * Derived from the field tags so the cache self-invalidates when the
+ * list of fields changes — no manual version bumps needed.
+ */
+const MERGE_FIELDS_KV_KEY = `__mc_merge_fields:${[...DESIRED_MERGE_FIELDS].map((f) => f.tag).sort().join(",")}`;
+
 /**
  * Ensure the custom merge fields exist on the audience.
  * Safe to call multiple times — it will skip fields that already exist.
- *
- * Call this once during initial setup (e.g. from a deploy script or admin
- * endpoint), not on every request.
  */
 export async function ensureMergeFields(): Promise<string[]> {
   const cfg = getConfig();
@@ -198,14 +212,8 @@ export async function ensureMergeFields(): Promise<string[]> {
   };
   const existingTags = new Set(existing.merge_fields.map((f) => f.tag));
 
-  // Fields we want
-  const desiredFields = [
-    { tag: "RESV_AMT", name: "Reservation Amount", type: "number" },
-    { tag: "SOURCE", name: "Signup Source", type: "text" },
-  ];
-
   const created: string[] = [];
-  for (const field of desiredFields) {
+  for (const field of DESIRED_MERGE_FIELDS) {
     if (existingTags.has(field.tag)) continue;
 
     const res = await fetch(base, {
@@ -230,4 +238,32 @@ export async function ensureMergeFields(): Promise<string[]> {
   }
 
   return created;
+}
+
+/**
+ * One-shot merge-field bootstrapper backed by Cloudflare KV.
+ *
+ * On the first call (no KV entry), it runs `ensureMergeFields()` against the
+ * Mailchimp API and writes a flag to KV so subsequent requests skip the work.
+ * If KV is unavailable the bootstrap is silently skipped (the fields are
+ * assumed to already exist).
+ */
+export async function ensureMergeFieldsOnce(kv: KVNamespace | null): Promise<void> {
+  if (!kv) return; // no KV binding — nothing we can cache, skip
+
+  try {
+    const cached = await kv.get(MERGE_FIELDS_KV_KEY);
+    if (cached) return; // already bootstrapped for this set of fields
+
+    const created = await ensureMergeFields();
+
+    await kv.put(
+      MERGE_FIELDS_KV_KEY,
+      JSON.stringify({ bootstrappedAt: new Date().toISOString(), created }),
+    );
+    console.log(`[mailchimp] Merge fields bootstrapped (created: ${created.join(", ") || "none, all existed"})`);
+  } catch (err) {
+    // Non-fatal — don't break the subscribe flow for a one-time setup task
+    console.warn("[mailchimp] ensureMergeFieldsOnce failed:", err);
+  }
 }
