@@ -39,6 +39,15 @@ body {
   overflow-x: hidden;
 }
 
+/* Prevent iOS Safari from zooming into inputs on focus (triggers at font-size < 16px) */
+@supports (-webkit-touch-callout: none) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0);
@@ -90,22 +99,87 @@ body {
 }
 
 @keyframes badge-glitch {
-  0%, 100% { transform: translate(0, 0) skewX(0deg); opacity: 1; filter: none; }
-  5% { transform: translate(-4px, 1px) skewX(-4deg); opacity: 0.2; filter: blur(1px); }
-  6% { transform: translate(5px, -1px) skewX(5deg); opacity: 1; filter: none; }
-  7% { transform: translate(-2px, 0) skewX(-2deg); opacity: 0.6; filter: none; }
-  10% { transform: translate(0, 0) skewX(0deg); opacity: 1; filter: none; }
-  30% { transform: translate(0, 0) skewX(0deg); opacity: 1; filter: none; }
-  31% { transform: translate(6px, 0) skewX(6deg); opacity: 0.15; filter: blur(2px); }
-  32% { transform: translate(-3px, 2px) skewX(-3deg); opacity: 0.8; filter: none; }
-  33% { transform: translate(2px, -1px) skewX(2deg); opacity: 0.3; filter: blur(1px); }
-  35% { transform: translate(0, 0) skewX(0deg); opacity: 1; filter: none; }
-  60% { transform: translate(0, 0) skewX(0deg); opacity: 1; filter: none; }
-  61% { transform: translate(-5px, 0) skewX(-5deg); opacity: 0.1; filter: blur(2px); }
-  62% { transform: translate(4px, 1px) skewX(4deg); opacity: 0.9; filter: none; }
-  63% { transform: translate(-1px, 0) skewX(-1deg); opacity: 0.4; filter: blur(1px); }
-  64% { transform: translate(3px, -1px) skewX(3deg); opacity: 1; filter: none; }
-  66% { transform: translate(0, 0) skewX(0deg); opacity: 1; filter: none; }
+  0%,
+  100% {
+    transform: translate(0, 0) skewX(0deg);
+    opacity: 1;
+    filter: none;
+  }
+  5% {
+    transform: translate(-4px, 1px) skewX(-4deg);
+    opacity: 0.2;
+    filter: blur(1px);
+  }
+  6% {
+    transform: translate(5px, -1px) skewX(5deg);
+    opacity: 1;
+    filter: none;
+  }
+  7% {
+    transform: translate(-2px, 0) skewX(-2deg);
+    opacity: 0.6;
+    filter: none;
+  }
+  10% {
+    transform: translate(0, 0) skewX(0deg);
+    opacity: 1;
+    filter: none;
+  }
+  30% {
+    transform: translate(0, 0) skewX(0deg);
+    opacity: 1;
+    filter: none;
+  }
+  31% {
+    transform: translate(6px, 0) skewX(6deg);
+    opacity: 0.15;
+    filter: blur(2px);
+  }
+  32% {
+    transform: translate(-3px, 2px) skewX(-3deg);
+    opacity: 0.8;
+    filter: none;
+  }
+  33% {
+    transform: translate(2px, -1px) skewX(2deg);
+    opacity: 0.3;
+    filter: blur(1px);
+  }
+  35% {
+    transform: translate(0, 0) skewX(0deg);
+    opacity: 1;
+    filter: none;
+  }
+  60% {
+    transform: translate(0, 0) skewX(0deg);
+    opacity: 1;
+    filter: none;
+  }
+  61% {
+    transform: translate(-5px, 0) skewX(-5deg);
+    opacity: 0.1;
+    filter: blur(2px);
+  }
+  62% {
+    transform: translate(4px, 1px) skewX(4deg);
+    opacity: 0.9;
+    filter: none;
+  }
+  63% {
+    transform: translate(-1px, 0) skewX(-1deg);
+    opacity: 0.4;
+    filter: blur(1px);
+  }
+  64% {
+    transform: translate(3px, -1px) skewX(3deg);
+    opacity: 1;
+    filter: none;
+  }
+  66% {
+    transform: translate(0, 0) skewX(0deg);
+    opacity: 1;
+    filter: none;
+  }
 }
 
 .badge-glitch {

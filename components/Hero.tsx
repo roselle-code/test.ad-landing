@@ -171,7 +171,7 @@ export default function Hero() {
                   placeholder="name@domain.com"
                   aria-label="Email address"
                   aria-invalid={showError}
-                  className={`${S.emailField} text-sm sm:text-base font-normal`}
+                  className={`${S.emailField} text-base font-normal`}
                 />
                 <motion.button
                   type="button"
